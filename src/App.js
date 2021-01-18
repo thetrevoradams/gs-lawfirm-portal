@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { Router } from '@reach/router'
+import useUser from './utils/useUser'
+import ActionItems from './screens/actionItems'
+import AllRecords from './screens/allRecords'
+import NotFound from './screens/notFound'
+import Header from './components/header'
+import Nav from './components/nav'
+import FullPageSpinner from './components/fullPageSpinner'
+import './styles/global.css'
+
+const Login = React.lazy(() => import('./screens/login'))
 
 function App() {
+  const userData = useUser()
+  console.log(`App ~ userData`, userData)
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <React.Suspense fallback={<FullPageSpinner />}>
+      {typeof userData.user === 'string' && <FullPageSpinner />}
+      {typeof userData.user !== 'string' && userData.user ? (
+        <>
+          <Header />
+          <Nav />
+          <Router primary={false}>
+            <ActionItems path="/" />
+            <AllRecords path="records" />
+            <NotFound default />
+          </Router>
+        </>
+      ) : (
+        <Login />
+      )}
+    </React.Suspense>
+  )
 }
 
-export default App;
+export default App
