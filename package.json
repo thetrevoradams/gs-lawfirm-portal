@@ -10,7 +10,9 @@
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "autoprefixer": "^9.0.0",
+    "dotenv": "^8.2.0",
     "firebase": "^8.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "postcss": "^7",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -20,6 +22,7 @@
   },
   "scripts": {
     "start": "craco start",
+    "dev": "netlify dev",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject"

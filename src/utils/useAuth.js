@@ -33,7 +33,7 @@ const signOut = async () => {
   auth.signOut()
   navigate('/')
 }
-
+//
 const passwordReset = async (email) => {
   try {
     const emailResp = await auth.sendPasswordResetEmail(email)

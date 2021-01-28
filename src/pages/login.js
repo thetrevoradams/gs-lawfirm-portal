@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react'
-import { signIn, passwordReset } from '../utils/useAuth'
+import { signIn, passwordReset } from '../utils'
 import Toast from '../components/toast'
 import logo from '../assets/logo.svg'
 

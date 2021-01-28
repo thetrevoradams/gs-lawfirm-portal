@@ -1,14 +1,14 @@
 import React from 'react'
 
-const FullPageSpinner = () => {
+const Spinner = () => {
   return (
-    <div className="w-full h-full fixed block top-0 left-0 bg-gsGray z-50">
+    <div className="w-full h-full fixed block top-0 left-0 z-50 text-gsGray">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="135"
         height="140"
         viewBox="0 0 135 140"
-        fill="#fff"
+        fill="#181B1F"
         className="transform scale-50 opacity-50 top-1/3 my-0 mx-auto block relative"
       >
         <rect y="10" width="15" height="120" rx="6">
@@ -106,4 +106,4 @@ const FullPageSpinner = () => {
   )
 }
 
-export default FullPageSpinner
+export default Spinner
