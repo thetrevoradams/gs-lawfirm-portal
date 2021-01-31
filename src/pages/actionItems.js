@@ -4,7 +4,7 @@ import Spinner from '../components/spinner'
 
 const ActionItems = ({ actionItems, loading }) => {
   return (
-    <div className="w-full h-full min-h-screen bg-gsLightBg py-6">
+    <div className="w-full h-full min-h-screen bg-gsLightBg py-6 flex flex-col lg:items-center">
       <>
         {loading ? (
           <Spinner />
@@ -14,12 +14,12 @@ const ActionItems = ({ actionItems, loading }) => {
             {actionItems?.length <= 0 ? (
               <div>No records to display</div>
             ) : (
-              <>
+              <div min-w-screen-lg>
                 <p className="text-gsGrayText font-semibold pb-6 mx-8">Action Items</p>
                 {actionItems?.map((record) => (
                   <ActionItem record={record} key={record['GS DebtorID']} />
                 ))}
-              </>
+              </div>
             )}
           </>
         )}
