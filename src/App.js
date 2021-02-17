@@ -1,43 +1,54 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Router } from '@reach/router'
-import { useUser, useData } from './utils'
+import { useUser, useRecords } from './utils'
 import ActionItems from './pages/actionItems'
 import AllRecords from './pages/allRecords'
 import NotFound from './pages/notFound'
 import Header from './components/header'
 import Nav from './components/nav'
 import FullPageSpinner from './components/fullPageSpinner'
-import RecordsContext from './context/recordsContext'
+import ActionItemsContext from './context/actionItemsContext'
 import './styles/global.css'
 
 const Login = React.lazy(() => import('./pages/login'))
 
+function useQuery() {
+  return new URLSearchParams(window.location?.search)
+}
+
 function App() {
-  const { records } = useData()
+  const query = useQuery()
+  const [actionItems, setActionItems] = useState([])
+  const [searchTerm, setSearchTerm] = useState(query.get('u') || '')
+  const [urgentId, setUrgentId] = useState(query.get('u'))
   const userData = useUser()
-  console.log(`App ~ userData`, userData)
-  let actionItems = []
-  if (typeof records !== 'string') {
-    console.log('records', records)
-    actionItems = records.filter((item) => item.UpdateRequest && !item.UpdateResponse)
-  }
+  const { records, lawFirmData } = useRecords(userData.user)
+
+  useEffect(() => {
+    if (typeof records !== 'string') {
+      setActionItems(records.filter((item) => item.UpdateRequest && !item.UpdateResponse))
+    }
+  }, [records])
+
   return (
     <React.Suspense fallback={<FullPageSpinner />}>
       {typeof userData.user === 'string' && <FullPageSpinner />}
       {typeof userData.user !== 'string' && userData.user ? (
-        <>
+        <ActionItemsContext.Provider
+          value={{ actionItems, setActionItems, searchTerm, setSearchTerm, urgentId, setUrgentId, lawFirmData }}
+        >
           <div className="sticky top-0 z-10">
-            <Header actionCount={actionItems.length} />
+            <Header />
             <Nav />
           </div>
-          <RecordsContext.Provider value={records}>
+          <div className="flex flex-col xl:items-center bg-gsLightBg">
             <Router primary={false}>
-              <ActionItems path="/" actionItems={actionItems} loading={typeof records === 'string'} />
-              <AllRecords path="records" loading={typeof records === 'string'} />
+              <ActionItems path="/" loading={typeof records === 'string'} uid={userData.user?.uid} />
+              <AllRecords path="records" loading={typeof records === 'string'} records={records} />
               <NotFound default />
             </Router>
-          </RecordsContext.Provider>
-        </>
+          </div>
+        </ActionItemsContext.Provider>
       ) : (
         <Login />
       )}

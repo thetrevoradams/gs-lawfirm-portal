@@ -34,6 +34,7 @@ module.exports = {
       pink: colors.pink,
       gsLightBg: '#F1F5FB',
       gsLightGray: '#898E9E',
+      gsIconGray: '#7C7F93',
       gsGray: '#181B1F',
       gsGrayText: '#525461',
       gsOrangeGray: '#998A77',

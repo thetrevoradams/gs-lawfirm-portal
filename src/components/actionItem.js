@@ -1,6 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useContext } from 'react'
+import { submitResp } from '../utils'
+import ActionItemsContext from '../context/actionItemsContext'
 
-const ActionItem = ({ record }) => {
+const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
+  const { setActionItems, setSearchTerm, urgentId, setUrgentId } = useContext(ActionItemsContext)
   const [resp, setResp] = useState('')
   const [containerHeight, setContainerHeight] = useState(1)
   const containerRef = useRef()
@@ -8,19 +11,33 @@ const ActionItem = ({ record }) => {
   const onChange = ({ target }) => {
     if (target.name === 'response') setResp(target.value)
   }
+  const handleSubmit = async () => {
+    const data = await submitResp({ uid, recordId: record.recordId, response: resp, urgentId })
+    if (data.success) {
+      setUrgentId('')
+      setSearchTerm('')
+      const urlParams = new URLSearchParams(window.location.search)
+      urlParams.delete('u')
+      setSuccessMsg('Successfully saved your response.')
+      setActionItems((items) => items.filter((item) => item.recordId !== record.recordId))
+    } else {
+      // console.error('error', data)
+      setErrorMsg('There was an error saving your response.')
+    }
+  }
 
   useEffect(() => {
     if (containerRef?.current) setContainerHeight(containerRef.current.clientHeight)
   }, [containerRef])
 
   return (
-    <div className="flex flex-row rounded bg-white overflow-hidden mx-8 mb-4 actionItem max-w-screen-lg lg:w-full">
+    <div className="flex flex-row rounded bg-white overflow-hidden mx-8 mb-4 max-w-screen-lg lg:w-full">
       <div className="flex flex-col text-sm pl-6 py-2 actionItemDeets relative" ref={containerRef}>
         <div className="font-normal text-gsOrangeGray">Case</div>
         <span>
           {record.CaseName.split(',').map((name, index) => (
             // eslint-disable-next-line react/no-array-index-key
-            <p key={`${record['GS DebtorID']}${index}`} className="text-gsDarkOrange opacity-80 font-semibold">
+            <p key={`${record.recordId}_${index}`} className="text-gsDarkOrange opacity-80 font-semibold">
               {name}
             </p>
           ))}
@@ -41,7 +58,9 @@ const ActionItem = ({ record }) => {
       </div>
       <div className="flex flex-col lg:flex-row flex-grow">
         <div className="flex flex-col mx-4 p-2 flex-grow">
-          <div className="font-bold text-gsOrange ">Information Requested</div>
+          <div className={`font-bold ${urgentId === record.CounselFileNumber ? 'text-red-500' : 'text-gsOrange'}`}>
+            Information Requested {urgentId === record.CounselFileNumber ? '(URGENT)' : ''}
+          </div>
           <div className="flex items-center my-2">
             <svg width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
               <rect width="25" height="25" rx="12.5" fill="#F7DCB9" />
@@ -55,11 +74,7 @@ const ActionItem = ({ record }) => {
               />
             </svg>
             {record.UpdateRequestDate && (
-              <small className="font-semibold text-gsGrayText">
-                {new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(
-                  new Date(record.UpdateRequestDate)
-                )}
-              </small>
+              <small className="font-semibold text-gsGrayText">{record.updateRequestDateFormatted}</small>
             )}
           </div>
           <div className="text-sm text-gsGrayText">{record.UpdateRequest}</div>
@@ -77,11 +92,13 @@ const ActionItem = ({ record }) => {
       </div>
       <button
         type="button"
-        disabled={resp}
+        disabled={!resp}
+        title={resp ? 'Submit response' : 'Enter your response before submitting'}
         className={`bg-gsLightGray text-white w-20 justify-self-end disabled:bg-gsLightOrange flex items-center justify-center ${
           resp ? 'cursor-pointer bg-gsDarkOrange hover:bg-gsOrange' : 'cursor-not-allowed'
         }`}
         style={{ minWidth: '5rem' }}
+        onClick={handleSubmit}
       >
         <svg width="24" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path

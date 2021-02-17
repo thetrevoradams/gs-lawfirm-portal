@@ -1,7 +1,14 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link } from '@reach/router'
+import ActionItemsContext from '../context/actionItemsContext'
 
 const Nav = () => {
+  const { searchTerm, setSearchTerm } = useContext(ActionItemsContext)
+
+  const onChange = (e) => {
+    if (e.target) setSearchTerm(e.target.value)
+  }
+
   return (
     <div className="flex justify-between items-center bg-white px-5 py-3">
       <nav>
@@ -26,7 +33,7 @@ const Nav = () => {
           All Records
         </Link>
       </nav>
-      <div className="relative text-gsLightGray focus-within:text-gsGray">
+      <div className="relative text-gsLightGray focus-within:text-gsBlue">
         <span className="absolute inset-y-0 left-0 flex items-center pl-2">
           <svg
             fill="none"
@@ -40,11 +47,15 @@ const Nav = () => {
           </svg>
         </span>
         <input
-          className="bg-gsLightBg placeholder-gsLightGray text-gsGray pl-10 appearance-none block rounded-full text-sm shadow-inner focus:border-blue-500 focus:outline-none focus:w-2/3 px-4 py-2"
+          className={`bg-gsLightBg placeholder-gsLightGray text-gsGray pl-10 appearance-none block rounded-full text-sm shadow-inner border border-transparent focus:border-gsBlue focus:outline-none focus:w-2/3 px-4 py-2 ${
+            searchTerm ? 'border-gsBlue' : ''
+          }`}
           placeholder="Search"
           type="text"
           name="search"
           autoComplete="off"
+          value={searchTerm}
+          onChange={onChange}
         />
       </div>
     </div>

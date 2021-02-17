@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { navigate } from '@reach/router'
 import logo from '../assets/logo.svg'
 import { signOut } from '../utils'
+import ActionItemsContext from '../context/actionItemsContext'
 
-const Header = ({ actionCount }) => {
+const Header = () => {
+  const { actionItems, lawFirmData } = useContext(ActionItemsContext)
   const actionStyle =
-    actionCount < 100
+    actionItems.length < 100
       ? { height: 26, width: 26, top: '-14px', right: '-10px' }
       : { height: 24, width: 32, top: '-12px', right: '-16px' }
   return (
@@ -14,14 +16,17 @@ const Header = ({ actionCount }) => {
         <div className=" border-r border-gray-50 pr-7">
           <img src={logo} alt="Guaranty Solutions" className="select-none" draggable="false" style={{ height: 45 }} />
         </div>
-        <div className="select-none pl-4 tracking-wide text-2xl text-white font-regular ml-2 mdMax:text-xl smMax:text-xl">
-          Law Firm Portal
-        </div>
+        {lawFirmData.FirmName && (
+          <div className="select-none pl-4 tracking-wide text-2xl text-white font-regular ml-2 mdMax:text-xl smMax:text-xl">
+            {lawFirmData.FirmName}
+          </div>
+        )}
       </div>
       <div className="flex flex-row items-center">
         <button
           type="button"
           aria-label="action items"
+          title="View action items"
           className="focus:ring-2 ring-text-gsBlue outline-none border-none relative"
           onClick={() => navigate('/')}
         >
@@ -39,18 +44,19 @@ const Header = ({ actionCount }) => {
               strokeLinejoin="round"
             />
           </svg>
-          {actionCount > 0 && (
+          {actionItems.length > 0 && (
             <div
               className="box-border absolute bg-gsDarkOrange text-white text-xs border-4 border-gsGray flex justify-center items-center font-semibold"
               style={{ ...actionStyle, borderRadius: 26 }}
             >
-              {actionCount < 100 ? actionCount : '99+'}
+              {actionItems.length < 100 ? actionItems.length : '99+'}
             </div>
           )}
         </button>
         <button
           type="button"
           aria-label="logout"
+          title="Logout"
           className="ml-5 focus:ring-2 ring-text-gsBlue outline-none border-none"
           onClick={signOut}
         >

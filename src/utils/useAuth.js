@@ -18,7 +18,6 @@ const signIn = async (email, password) => {
   try {
     const authResp = await auth.signInWithEmailAndPassword(email, password)
     if (authResp?.user) {
-      console.log(`authResp?.user`, authResp?.user)
       // const userToken = await authResp?.user.getIdToken()
       // const postResp = await postUserToken(userToken)
       // return postResp
