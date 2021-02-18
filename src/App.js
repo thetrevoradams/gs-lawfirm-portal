@@ -26,7 +26,17 @@ function App() {
 
   useEffect(() => {
     if (typeof records !== 'string') {
-      setActionItems(records.filter((item) => item.UpdateRequest && !item.UpdateResponse))
+      const oldActionItems = records.filter((item) => item.UpdateRequest && !item.UpdateResponse)
+
+      let newActionItems = []
+      records.forEach((record) => {
+        if (record?.requestHistory) {
+          const entries = JSON.parse(record.requestHistory)
+          newActionItems = entries.filter((item) => item.reqMsg && !item.respMsg)
+        }
+      })
+
+      setActionItems([...newActionItems, ...oldActionItems])
     }
   }, [records])
 
@@ -44,7 +54,12 @@ function App() {
           <div className="flex flex-col xl:items-center bg-gsLightBg">
             <Router primary={false}>
               <ActionItems path="/" loading={typeof records === 'string'} uid={userData.user?.uid} />
-              <AllRecords path="records" loading={typeof records === 'string'} records={records} />
+              <AllRecords
+                path="records"
+                loading={typeof records === 'string'}
+                records={records}
+                uid={userData.user?.uid}
+              />
               <NotFound default />
             </Router>
           </div>

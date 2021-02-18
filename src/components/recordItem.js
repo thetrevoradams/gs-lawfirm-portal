@@ -22,7 +22,7 @@ const reducer = (state, action) => {
   }
 }
 
-const RecordItem = ({ record }) => {
+const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
   const { urgentId } = useContext(ActionItemsContext)
 
   const [state, dispatch] = useReducer(reducer, { expanded: false, expandedSection: '' })
@@ -64,9 +64,7 @@ const RecordItem = ({ record }) => {
       <div
         ref={containerRef}
         className={`flex flex-row justify-between bg-white mx-8 recordItem max-w-screen-lg lg:w-full p-5 overflow-hidden z-10 ${
-          urgentId === record.CounselFileNumber
-            ? 'border-l-4 border-red-400'
-            : 'border-b border-gsLightGray border-opacity-20'
+          urgentId === record.recordId ? 'border-l-4 border-red-400' : 'border-b border-gsLightGray border-opacity-20'
         }`}
       >
         <div
@@ -79,10 +77,10 @@ const RecordItem = ({ record }) => {
               <p key={`r${record.recordId}_${index}`}>{name}</p>
             ))}
           </div>
-          <div>{record.CounselFileNumber}</div>
+          <div className={record.CounselFileNumber ? '' : 'opacity-50'}>{record.CounselFileNumber || 'Unknown'}</div>
           <div>{record['Judgments 2::JudgmentRecordingState']}</div>
         </div>
-        <div className="space-x-3 flex items-center">
+        <div className="space-x-5 flex items-center">
           <IconButton
             icon="briefcase"
             onClick={onClick}
@@ -94,16 +92,16 @@ const RecordItem = ({ record }) => {
             title="Information Requests"
             onClick={onClick}
             selected={expandedSection === 'message'}
-            urgent={urgentId === record.CounselFileNumber}
+            urgent={urgentId === record.recordId}
           />
           <IconButton icon="file" title="Attachments" onClick={onClick} selected={expandedSection === 'file'} />
         </div>
       </div>
       <div ref={expanderRef} className="opacity-0 bg-white max-w-screen-lg lg:w-full mx-8 rounded-b recordExpander">
-        {expandedSection === 'briefcase' && <SectionLegal record={record} />}
-        {expandedSection === 'message' && (
-          <SectionMessage urgent={urgentId === record.CounselFileNumber} record={record} />
+        {expandedSection === 'briefcase' && (
+          <SectionLegal record={record} setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg} uid={uid} />
         )}
+        {expandedSection === 'message' && <SectionMessage urgent={urgentId === record.recordId} record={record} />}
         {expandedSection === 'file' && <SectionAttachment record={record} />}
       </div>
     </>

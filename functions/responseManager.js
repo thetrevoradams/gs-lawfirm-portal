@@ -49,14 +49,9 @@ async function fetchToken(clarisIdToken) {
   return tokenJson
 }
 
-async function submitResp({ dataToken, uid, recordId, response, urgentId }) {
+async function submitResp({ dataToken, recordId, response, urgentId, itemHistory, date }) {
   // TODO: Trigger email if 'urgentId' is present
-
-  const dateVal = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date())
+  console.log('submitResp -> urgentId', urgentId)
 
   const dataRaw = await fetch(`${process.env.REACT_DB_EDIT_URL}/${recordId}`, {
     method: 'PATCH',
@@ -66,13 +61,28 @@ async function submitResp({ dataToken, uid, recordId, response, urgentId }) {
     },
     body: JSON.stringify({
       fieldData: {
-        UpdateResponse_app: JSON.stringify({
-          date: dateVal,
-          response,
-          submittedBy: uid,
-        }),
+        requestHistory: JSON.stringify(itemHistory),
         UpdateResponse: response,
-        UpdateResponseDate: dateVal,
+        UpdateResponseDate: date,
+      },
+    }),
+  })
+  const json = await dataRaw.json()
+  return json
+}
+
+async function addLegalAction({ dataToken, recordId, response, date, oldActions, itemHistory }) {
+  const dataRaw = await fetch(`${process.env.REACT_DB_EDIT_URL}/${recordId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${dataToken}`,
+    },
+    body: JSON.stringify({
+      fieldData: {
+        LegalActionStatus_app: JSON.stringify(itemHistory),
+        LegalActionStatus: `${response}\r${oldActions}`,
+        LegalActionStatusDate: date,
       },
     }),
   })
@@ -81,7 +91,7 @@ async function submitResp({ dataToken, uid, recordId, response, urgentId }) {
 }
 
 exports.handler = async (entry) => {
-  const { uid, recordId, response } = JSON.parse(entry.body)
+  const { recordId, response, type, date, oldActions, itemHistory, urgentId } = JSON.parse(entry.body)
   try {
     const resp = await fetchClarisId()
 
@@ -91,8 +101,20 @@ exports.handler = async (entry) => {
       const dataToken = tokenJson.response.token
 
       if (dataToken) {
-        // --- GET USER'S LAW FIRM DETAILS ---
-        const submissionResp = await submitResp({ dataToken, uid, recordId, response })
+        let submissionResp = ''
+        if (type === 'actionResp') {
+          // --- SUBMIT ACTION RESP ---
+          submissionResp = await submitResp({ dataToken, recordId, response, itemHistory, urgentId, date })
+        } else if (type === 'legalAction') {
+          submissionResp = await addLegalAction({
+            dataToken,
+            recordId,
+            response,
+            date,
+            oldActions,
+            itemHistory,
+          })
+        }
         if (submissionResp) {
           return {
             statusCode: 200,

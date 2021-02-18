@@ -1,10 +1,10 @@
 import React from 'react'
 
-const ResponseBlock = ({ msg, date, icon }) => {
+const ResponseBlock = ({ msg, date, showIcon }) => {
   return (
     <div className="flex bg-gsLightBg p-3 my-4 ml-2 rounded">
-      {icon === 'downArrow' && (
-        <svg width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {showIcon && (
+        <svg width="26" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path
             d="M11.25 7.5L15 11.25 11.25 15"
             stroke="#525461"
@@ -22,8 +22,17 @@ const ResponseBlock = ({ msg, date, icon }) => {
         </svg>
       )}
       <div className="flex flex-col ml-2" style={{ paddingTop: '2px' }}>
-        <small className="font-semibold text-gsGrayText mb-2">{date || 'Unknown Date'}</small>
-        <p className="text-sm ">{msg}</p>
+        {msg ? (
+          <>
+            <small className="font-semibold text-gsGrayText mb-2">{date || 'Unknown Date'}</small>
+            <p className="text-sm ">{msg}</p>
+          </>
+        ) : (
+          <>
+            <small className="font-semibold text-gsDarkOrange mb-2">Awaiting your response</small>
+            <small className="text-gsGrayText mb-2 italic">Please review your pending Action Items</small>
+          </>
+        )}
       </div>
     </div>
   )

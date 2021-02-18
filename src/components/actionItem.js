@@ -12,7 +12,29 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
     if (target.name === 'response') setResp(target.value)
   }
   const handleSubmit = async () => {
-    const data = await submitResp({ uid, recordId: record.recordId, response: resp, urgentId })
+    const date = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date())
+    const pastActions = JSON.parse(record.LegalActionStatus_app)
+    const data = await submitResp({
+      recordId: record.recordId,
+      urgentId,
+      response: resp,
+      date,
+      itemHistory: [
+        {
+          reqDate: record.updateRequestDate,
+          reqMsg: record.UpdateRequest,
+          respDate: date,
+          respMsg: resp,
+          urgent: Boolean(urgentId),
+          submittedBy: uid,
+        },
+        ...pastActions,
+      ],
+    })
     if (data.success) {
       setUrgentId('')
       setSearchTerm('')
@@ -58,8 +80,8 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
       </div>
       <div className="flex flex-col lg:flex-row flex-grow">
         <div className="flex flex-col mx-4 p-2 flex-grow">
-          <div className={`font-bold ${urgentId === record.CounselFileNumber ? 'text-red-500' : 'text-gsOrange'}`}>
-            Information Requested {urgentId === record.CounselFileNumber ? '(URGENT)' : ''}
+          <div className={`font-bold ${urgentId === record.recordId ? 'text-red-500' : 'text-gsOrange'}`}>
+            Information Requested {urgentId === record.recordId ? '(URGENT)' : ''}
           </div>
           <div className="flex items-center my-2">
             <svg width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">

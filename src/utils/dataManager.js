@@ -1,10 +1,8 @@
-import React from 'react'
-
-const submitResp = async ({ uid, recordId, response, urgentId }) => {
+const submitResp = async ({ recordId, response, urgentId, itemHistory, date }) => {
   try {
     const submissionRaw = await fetch('/.netlify/functions/responseManager', {
       method: 'POST',
-      body: JSON.stringify({ uid, recordId, response, urgentId }),
+      body: JSON.stringify({ recordId, response, urgentId, type: 'actionResp', itemHistory, date }),
     })
     const data = await submissionRaw.json()
     return { success: data.messages[0].message === 'OK' }
@@ -14,8 +12,18 @@ const submitResp = async ({ uid, recordId, response, urgentId }) => {
   }
 }
 
-const handleSomething = () => {
-  return <div />
+const addLegalAction = async ({ recordId, response, date, oldActions, itemHistory }) => {
+  try {
+    const submissionRaw = await fetch('/.netlify/functions/responseManager', {
+      method: 'POST',
+      body: JSON.stringify({ recordId, response, oldActions, date, type: 'legalAction', itemHistory }),
+    })
+    const data = await submissionRaw.json()
+    return { success: data.messages[0].message === 'OK' }
+  } catch (error) {
+    console.error('error', error)
+    return error
+  }
 }
 
-export { submitResp, handleSomething }
+export { submitResp, addLegalAction }

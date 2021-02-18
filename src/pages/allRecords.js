@@ -1,17 +1,22 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import RecordItem from '../components/recordItem'
 import Spinner from '../components/spinner'
 import ActionItemsContext from '../context/actionItemsContext'
 import filterSearch from '../utils/searchUtil'
 import StatusText from '../components/statusText'
+import Toast from '../components/toast'
 
-const ActionItems = ({ loading, records }) => {
+const AllRecords = ({ loading, records, uid }) => {
+  const [errorMsg, setErrorMsg] = useState('')
+  const [successMsg, setSuccessMsg] = useState('')
   const { searchTerm } = useContext(ActionItemsContext)
   const displayed = searchTerm ? records.filter((r) => filterSearch({ searchTerm, r })) : records
 
   return (
     <div className="w-screen max-w-screen-lg h-full min-h-screen min-h-screen py-6 flex flex-col">
       <>
+        {errorMsg && <Toast type="error" msg={errorMsg} onComplete={setErrorMsg} />}
+        {successMsg && <Toast type="success" msg={successMsg} onComplete={setSuccessMsg} />}
         {loading ? (
           <Spinner />
         ) : (
@@ -41,7 +46,13 @@ const ActionItems = ({ loading, records }) => {
                 </div>
                 {displayed.length === 0 && <StatusText text="No records match your search." />}
                 {displayed?.map((record) => (
-                  <RecordItem record={record} key={`r${record.recordId}`} />
+                  <RecordItem
+                    record={record}
+                    key={`r${record.recordId}`}
+                    setSuccessMsg={setSuccessMsg}
+                    setErrorMsg={setErrorMsg}
+                    uid={uid}
+                  />
                 ))}
               </div>
             )}
@@ -52,4 +63,4 @@ const ActionItems = ({ loading, records }) => {
   )
 }
 
-export default ActionItems
+export default AllRecords
