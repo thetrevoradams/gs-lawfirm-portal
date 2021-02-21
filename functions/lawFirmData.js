@@ -50,7 +50,7 @@ async function fetchToken(clarisIdToken) {
 }
 
 async function fetchUserLawFirm(dataToken, uid) {
-  const dataRaw = await fetch(process.env.REACT_DB_USER_URL, {
+  const dataRaw = await fetch(`${process.env.REACT_DB_USER_URL}/_find`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ async function fetchUserLawFirm(dataToken, uid) {
   return json
 }
 async function fetchLawFirmData(dataToken, LawFirmMasterID) {
-  const dataRaw = await fetch(process.env.REACT_DB_URL, {
+  const dataRaw = await fetch(`${process.env.REACT_DB_URL}/_find`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ async function updateRecordWithAttachments(dataToken, record, index) {
   if (record.RecordID_fk) {
     let attachmentsRaw
     try {
-      // attachmentsRaw = await fetch(process.env.REACT_DB_FILES_URL, {
+      // attachmentsRaw = await fetch(`${process.env.REACT_DB_FILES_URL}/_find`, {
       //   method: 'POST',
       //   headers: {
       //     'Content-Type': 'application/json',
@@ -121,8 +121,9 @@ exports.handler = async (entry) => {
 
       if (dataToken) {
         // --- GET USER'S LAW FIRM DETAILS ---
-        const firmData = await fetchUserLawFirm(dataToken, uid)
-        const userLawFirmData = firmData?.response?.data[0].fieldData
+        const firmResp = await fetchUserLawFirm(dataToken, uid)
+        const firmData = firmResp?.response?.data[0]
+        const userLawFirmData = { ...firmData.fieldData, recordId: firmData.recordId }
 
         if (userLawFirmData) {
           // --- GET LAW FIRM RECORDS ---
@@ -136,7 +137,7 @@ exports.handler = async (entry) => {
                 updateRecordWithAttachments(dataToken, { ...item.fieldData, recordId: item.recordId })
               )
             )
-            console.log(`--- AFTER Promise FIRST record --- `, lawFirmRecords[0])
+            // console.log(`--- AFTER Promise FIRST record --- `, lawFirmRecords[0])
           }
 
           return {
@@ -146,7 +147,7 @@ exports.handler = async (entry) => {
         }
         return {
           statusCode: 500,
-          body: JSON.stringify({ msg: firmData.msg }),
+          body: JSON.stringify({ msg: firmResp.msg }),
         }
       }
     }

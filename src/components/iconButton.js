@@ -1,4 +1,5 @@
 import React from 'react'
+import Tooltip from './tooltip'
 
 const Briefcase = () => (
   <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -59,13 +60,14 @@ const IconButton = ({ icon = 'message', onClick, selected, urgent, title }) => {
   //   }
   // }
   return (
-    <button
-      onClick={handleClick}
-      // onKeyPress={handleKeyPress}
-      type="button"
-      title={title}
-      aria-pressed={selected}
-      className={`iconButton p-2 rounded-full
+    <Tooltip msg={title}>
+      <button
+        onClick={handleClick}
+        // onKeyPress={handleKeyPress}
+        type="button"
+        aria-pressed={selected}
+        data-urgent={urgent}
+        className={`iconButton p-2 rounded-full
       shadow hover:shadow-md focus:shadow-md transition-colors focus:outline-none hover:bg-gsBlue focus:bg-gsBlue ${
         // eslint-disable-next-line no-nested-ternary
         selected
@@ -74,11 +76,12 @@ const IconButton = ({ icon = 'message', onClick, selected, urgent, title }) => {
           ? 'ring-2 bg-red-400 ring-red-500 ring-opacity-30'
           : 'bg-gsLightBg'
       }`}
-    >
-      {icon === 'briefcase' && <Briefcase />}
-      {icon === 'message' && <Message />}
-      {icon === 'file' && <File />}
-    </button>
+      >
+        {icon === 'briefcase' && <Briefcase />}
+        {icon === 'message' && <Message />}
+        {icon === 'file' && <File />}
+      </button>
+    </Tooltip>
   )
 }
 

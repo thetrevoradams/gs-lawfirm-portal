@@ -41,5 +41,17 @@ const passwordReset = async (email) => {
     return { error }
   }
 }
+const updatePassword = async (password, recordId) => {
+  try {
+    await auth.currentUser.updatePassword(password)
+    const updateResp = await fetch('/.netlify/functions/updateUser', {
+      method: 'POST',
+      body: JSON.stringify({ recordId }),
+    })
+    return updateResp
+  } catch (error) {
+    return { error }
+  }
+}
 
-export { signIn, signOut, passwordReset }
+export { signIn, signOut, passwordReset, updatePassword }

@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+.tooltip {
+  @apply invisible absolute border border-gsGrayText shadow-lg p-0.5 bg-gsGray rounded-sm text-white text-xs;
+  width: max-content;
+}
+.tooltip[position='top'] {
+  @apply -mt-6;
+}
+.tooltip[position='bottom-left'] {
+  bottom: -18px;
+  right: 12px;
+}
+.tooltip[position='bottom'] {
+  bottom: -26px;
+}
+.hasTooltip:hover .tooltip {
+  @apply visible;
+}
+
+
 .nav-link {
   transition: color 300ms; 
 }
@@ -59,7 +78,8 @@
 
 .iconButton:hover svg path,
 .iconButton:focus svg path,
-.iconButton[aria-pressed="true"] svg path {
+.iconButton[aria-pressed="true"] svg path,
+.iconButton[data-urgent="true"] svg path {
   stroke: #fff;
 }
 

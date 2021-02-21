@@ -164,6 +164,16 @@ const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
           date={action?.date ? formatDate(action.date) : ''}
         />
       ))}
+      {expanded &&
+        legalActions
+          .slice(3)
+          .map((action, index) => (
+            <ResponseBlock
+              key={`${record.recordId}_legal_extra_${index}`}
+              msg={action?.response || action}
+              date={action?.date ? formatDate(action.date) : ''}
+            />
+          ))}
       {legalActions.length > 3 && (
         <button
           onClick={() => dispatch({ type: 'toggleExpanded' })}
@@ -182,16 +192,6 @@ const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
           </svg>
         </button>
       )}
-      {expanded &&
-        legalActions
-          .slice(3)
-          .map((action, index) => (
-            <ResponseBlock
-              key={`${record.recordId}_legal_extra_${index}`}
-              msg={action?.response || action}
-              date={action?.date ? formatDate(action.date) : ''}
-            />
-          ))}
     </div>
   )
 }

@@ -1,16 +1,22 @@
 import React, { useContext, useState } from 'react'
+import { navigate } from '@reach/router'
 import ActionItem from '../components/actionItem'
 import Spinner from '../components/spinner'
-import ActionItemsContext from '../context/actionItemsContext'
+import { RecordsContext } from '../context/recordsContext'
 import Toast from '../components/toast'
 import StatusText from '../components/statusText'
 import filterSearch from '../utils/searchUtil'
 
-const ActionItems = ({ loading, uid }) => {
-  const { actionItems, searchTerm } = useContext(ActionItemsContext)
+const ActionItems = ({ uid }) => {
+  const { actionItems, searchTerm, isNewUser } = useContext(RecordsContext)
+  if (isNewUser) navigate('/setup')
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
-  const displayed = searchTerm ? actionItems.filter((r) => filterSearch({ searchTerm, r })) : actionItems
+  const displayed =
+    searchTerm && typeof actionItems !== 'string'
+      ? actionItems.filter((r) => filterSearch({ searchTerm, r }))
+      : actionItems
+  const loading = typeof actionItems === 'string'
 
   return (
     <div className="w-screen max-w-screen-lg h-full min-h-screen py-6 flex flex-col">

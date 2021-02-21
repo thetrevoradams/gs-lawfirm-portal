@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect, useContext } from 'react'
 import { submitResp } from '../utils'
-import ActionItemsContext from '../context/actionItemsContext'
+import { RecordsContext } from '../context/recordsContext'
+import Tooltip from './tooltip'
 
 const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
-  const { setActionItems, setSearchTerm, urgentId, setUrgentId } = useContext(ActionItemsContext)
+  const { dispatch, urgentId } = useContext(RecordsContext)
   const [resp, setResp] = useState('')
   const [containerHeight, setContainerHeight] = useState(1)
   const containerRef = useRef()
@@ -17,31 +18,30 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
       month: '2-digit',
       day: '2-digit',
     }).format(new Date())
-    const pastActions = JSON.parse(record.LegalActionStatus_app)
+    const pastActions = record.LegalActionStatus_app ? JSON.parse(record.LegalActionStatus_app) : ''
+    let itemHistory = [
+      {
+        reqDate: record.UpdateRequestDate,
+        reqMsg: record.UpdateRequest,
+        respDate: date,
+        respMsg: resp,
+        urgent: Boolean(urgentId),
+        submittedBy: uid,
+      },
+    ]
+    if (pastActions) itemHistory = [...itemHistory, ...pastActions]
     const data = await submitResp({
       recordId: record.recordId,
       urgentId,
       response: resp,
       date,
-      itemHistory: [
-        {
-          reqDate: record.updateRequestDate,
-          reqMsg: record.UpdateRequest,
-          respDate: date,
-          respMsg: resp,
-          urgent: Boolean(urgentId),
-          submittedBy: uid,
-        },
-        ...pastActions,
-      ],
+      itemHistory,
     })
     if (data.success) {
-      setUrgentId('')
-      setSearchTerm('')
-      const urlParams = new URLSearchParams(window.location.search)
-      urlParams.delete('u')
+      const query = new URLSearchParams(window.location.search)
+      query.delete('u')
       setSuccessMsg('Successfully saved your response.')
-      setActionItems((items) => items.filter((item) => item.recordId !== record.recordId))
+      dispatch({ type: 'clearActionItem', recordId: record.recordId, itemHistory })
     } else {
       // console.error('error', data)
       setErrorMsg('There was an error saving your response.')
@@ -53,7 +53,7 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
   }, [containerRef])
 
   return (
-    <div className="flex flex-row rounded bg-white overflow-hidden mx-8 mb-4 max-w-screen-lg lg:w-full">
+    <div className="flex flex-row rounded bg-white mx-8 mb-4 max-w-screen-lg lg:w-full">
       <div className="flex flex-col text-sm pl-6 py-2 actionItemDeets relative" ref={containerRef}>
         <div className="font-normal text-gsOrangeGray">Case</div>
         <span>
@@ -112,26 +112,27 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
           />
         </div>
       </div>
-      <button
-        type="button"
-        disabled={!resp}
-        title={resp ? 'Submit response' : 'Enter your response before submitting'}
-        className={`bg-gsLightGray text-white w-20 justify-self-end disabled:bg-gsLightOrange flex items-center justify-center ${
-          resp ? 'cursor-pointer bg-gsDarkOrange hover:bg-gsOrange' : 'cursor-not-allowed'
-        }`}
-        style={{ minWidth: '5rem' }}
-        onClick={handleSubmit}
-      >
-        <svg width="24" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M22 2.156l-11 11.86M22 2.156L15 23.72l-4-9.703-9-4.313 20-7.548z"
-            stroke="#fff"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </button>
+      <Tooltip msg={resp ? 'Submit response' : 'Enter your response before submitting'} position="bottom-left">
+        <button
+          type="button"
+          disabled={!resp}
+          className={`bg-gsLightGray text-white w-20 justify-self-end h-full disabled:bg-gsLightOrange flex items-center justify-center ${
+            resp ? 'cursor-pointer bg-gsDarkOrange hover:bg-gsOrange' : 'cursor-not-allowed'
+          }`}
+          style={{ minWidth: '5rem' }}
+          onClick={handleSubmit}
+        >
+          <svg width="24" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M22 2.156l-11 11.86M22 2.156L15 23.72l-4-9.703-9-4.313 20-7.548z"
+              stroke="#fff"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </Tooltip>
     </div>
   )
 }

@@ -1,8 +1,8 @@
 import React, { useRef, useReducer, useContext } from 'react'
 import IconButton from './iconButton'
-import ActionItemsContext from '../context/actionItemsContext'
+import { RecordsContext } from '../context/recordsContext'
 import SectionLegal from './sectionLegal'
-import SectionMessage from './sectionMessage'
+import SectionRequests from './sectionRequests'
 import SectionAttachment from './sectionAttachment'
 
 const reducer = (state, action) => {
@@ -23,7 +23,7 @@ const reducer = (state, action) => {
 }
 
 const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
-  const { urgentId } = useContext(ActionItemsContext)
+  const { urgentId } = useContext(RecordsContext)
 
   const [state, dispatch] = useReducer(reducer, { expanded: false, expandedSection: '' })
   const expanderRef = useRef()
@@ -63,7 +63,7 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
     <>
       <div
         ref={containerRef}
-        className={`flex flex-row justify-between bg-white mx-8 recordItem max-w-screen-lg lg:w-full p-5 overflow-hidden z-10 ${
+        className={`flex flex-row justify-between bg-white mx-8 recordItem max-w-screen-lg lg:w-full p-5 z-10 ${
           urgentId === record.recordId ? 'border-l-4 border-red-400' : 'border-b border-gsLightGray border-opacity-20'
         }`}
       >
@@ -101,7 +101,7 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
         {expandedSection === 'briefcase' && (
           <SectionLegal record={record} setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg} uid={uid} />
         )}
-        {expandedSection === 'message' && <SectionMessage urgent={urgentId === record.recordId} record={record} />}
+        {expandedSection === 'message' && <SectionRequests urgent={urgentId === record.recordId} record={record} />}
         {expandedSection === 'file' && <SectionAttachment record={record} />}
       </div>
     </>

@@ -1,12 +1,12 @@
 import React, { useContext } from 'react'
 import { Link } from '@reach/router'
-import ActionItemsContext from '../context/actionItemsContext'
+import { RecordsContext } from '../context/recordsContext'
 
 const Nav = () => {
-  const { searchTerm, setSearchTerm } = useContext(ActionItemsContext)
+  const { searchTerm, dispatch } = useContext(RecordsContext)
 
   const onChange = (e) => {
-    if (e.target) setSearchTerm(e.target.value)
+    if (e.target) dispatch({ type: 'searchOnChange', value: e.target.value })
   }
 
   return (

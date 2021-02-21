@@ -4,7 +4,7 @@ const ResponseBlock = ({ msg, date, showIcon }) => {
   return (
     <div className="flex bg-gsLightBg p-3 my-4 ml-2 rounded">
       {showIcon && (
-        <svg width="26" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="26" height="18" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ minWidth: '24px' }}>
           <path
             d="M11.25 7.5L15 11.25 11.25 15"
             stroke="#525461"
