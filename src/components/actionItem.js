@@ -2,10 +2,12 @@ import React, { useState, useRef, useEffect, useContext } from 'react'
 import { submitResp } from '../utils'
 import { RecordsContext } from '../context/recordsContext'
 import Tooltip from './tooltip'
+import LoadingIconSwap from './loadingIconSwap'
 
 const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
   const { dispatch, urgentId } = useContext(RecordsContext)
   const [resp, setResp] = useState('')
+  const [loading, setLoading] = useState(false)
   const [containerHeight, setContainerHeight] = useState(1)
   const containerRef = useRef()
 
@@ -13,12 +15,13 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
     if (target.name === 'response') setResp(target.value)
   }
   const handleSubmit = async () => {
+    setLoading(true)
     const date = new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
     }).format(new Date())
-    const pastActions = record.LegalActionStatus_app ? JSON.parse(record.LegalActionStatus_app) : ''
+    const pastActions = record.requestHistory ? JSON.parse(record.requestHistory) : ''
     let itemHistory = [
       {
         reqDate: record.UpdateRequestDate,
@@ -37,9 +40,10 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
       date,
       itemHistory,
     })
+    setLoading(false)
     if (data.success) {
-      const query = new URLSearchParams(window.location.search)
-      query.delete('u')
+      // Clear urgent param
+      window.history.replaceState({}, '', window.location.origin)
       setSuccessMsg('Successfully saved your response.')
       dispatch({ type: 'clearActionItem', recordId: record.recordId, itemHistory })
     } else {
@@ -117,20 +121,22 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
           type="button"
           disabled={!resp}
           className={`bg-gsLightGray text-white w-20 justify-self-end h-full disabled:bg-gsLightOrange flex items-center justify-center ${
-            resp ? 'cursor-pointer bg-gsDarkOrange hover:bg-gsOrange' : 'cursor-not-allowed'
+            resp && !loading ? 'cursor-pointer bg-gsDarkOrange hover:bg-gsOrange' : 'cursor-not-allowed'
           }`}
           style={{ minWidth: '5rem' }}
           onClick={handleSubmit}
         >
-          <svg width="24" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M22 2.156l-11 11.86M22 2.156L15 23.72l-4-9.703-9-4.313 20-7.548z"
-              stroke="#fff"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <LoadingIconSwap loading={loading}>
+            <svg width="24" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M22 2.156l-11 11.86M22 2.156L15 23.72l-4-9.703-9-4.313 20-7.548z"
+                stroke="#fff"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </LoadingIconSwap>
         </button>
       </Tooltip>
     </div>

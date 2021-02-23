@@ -27,6 +27,20 @@ const reducer = (state, action) => {
         isNewUser: lawFirmData?.FirstTimeUser === 'true',
       }
     }
+    case 'passwordUpdated':
+      return {
+        ...state,
+        isNewUser: false,
+      }
+    case 'updateLegalActions': {
+      const recordsCopy = [...state.records]
+      const index = recordsCopy.findIndex((r) => r.recordId === action.recordId)
+      if (index >= 0) recordsCopy[index].LegalActionStatus_app = JSON.stringify(action.itemHistory)
+      return {
+        ...state,
+        records: recordsCopy,
+      }
+    }
     case 'searchOnChange':
       return {
         ...state,

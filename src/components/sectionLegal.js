@@ -1,8 +1,10 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect, useReducer, useContext } from 'react'
 import ResponseBlock from './responseBlock'
 import StatusText from './statusText'
+import LoadingIconSwap from './loadingIconSwap'
 import { formatDate, addLegalAction } from '../utils'
+import { RecordsContext } from '../context/recordsContext'
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -33,6 +35,16 @@ const reducer = (state, action) => {
         ...state,
         actionVal: action.value,
       }
+    case 'loading':
+      return {
+        ...state,
+        loading: true,
+      }
+    case 'notLoading':
+      return {
+        ...state,
+        loading: false,
+      }
     case 'onCancel':
       return {
         ...state,
@@ -50,6 +62,7 @@ const reducer = (state, action) => {
         actionVal: '',
         dateVal: '',
         addingAction: false,
+        loading: false,
       }
     }
     default:
@@ -58,6 +71,7 @@ const reducer = (state, action) => {
 }
 
 const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
+  const { dispatch: recordsDispatch } = useContext(RecordsContext)
   const [state, dispatch] = useReducer(reducer, {
     expanded: false,
     addingAction: false,
@@ -65,8 +79,9 @@ const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
     dateVal: formatDate(new Date()),
     legalActions: [],
     displayedActions: [],
+    loading: false,
   })
-  const { expanded, addingAction, actionVal, dateVal, legalActions, displayedActions } = state
+  const { expanded, addingAction, actionVal, dateVal, legalActions, displayedActions, loading } = state
 
   useEffect(() => {
     if (record.recordId) dispatch({ type: 'init', record })
@@ -79,25 +94,30 @@ const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
     dispatch({ type: 'onCancel' })
   }
   const handleSubmit = async () => {
+    dispatch({ type: 'loading' })
     const date = new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
     }).format(new Date(dateVal))
+    const itemHistory = [
+      { date, response: actionVal, submittedBy: uid },
+      ...JSON.parse(record.LegalActionStatus_app || '[]'),
+    ]
     const data = await addLegalAction({
       recordId: record.recordId,
       response: actionVal,
       date,
-      itemHistory: [
-        { date, response: actionVal, submittedBy: uid },
-        ...JSON.parse(record.LegalActionStatus_app || '[]'),
-      ],
+      itemHistory,
       oldActions: record.LegalActionStatus,
     })
     if (data.success) {
       dispatch({ type: 'onSuccess' })
+      recordsDispatch({ type: 'updateLegalActions', itemHistory, recordId: record.recordId })
       setSuccessMsg('Successfully saved your response.')
     } else {
+      dispatch({ type: 'notLoading' })
+
       // console.error('error', data)
       setErrorMsg('There was an error saving your legal action.')
     }
@@ -146,10 +166,16 @@ const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
             </button>
             <button
               type="button"
-              className="bg-gsBlue text-white rounded-full py-2 px-3 hover:bg-opacity-70"
+              className={`flex text-white rounded-full py-2 px-3 hover:bg-opacity-70 ${
+                loading ? 'bg-gsLightGray cursor-not-allowed' : 'bg-gsBlue cursor-pointer'
+              }`}
               onClick={handleSubmit}
+              disabled={loading}
             >
-              Save
+              <LoadingIconSwap loading={loading}>
+                <span>Save</span>
+              </LoadingIconSwap>
+              {loading && <span className="ml-2">Saving</span>}
             </button>
           </div>
         </div>

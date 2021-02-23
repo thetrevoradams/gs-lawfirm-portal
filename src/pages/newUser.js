@@ -6,7 +6,7 @@ import { updatePassword } from '../utils'
 import { RecordsContext } from '../context/recordsContext'
 
 const NewUser = () => {
-  const { isNewUser, lawFirmData } = useContext(RecordsContext)
+  const { isNewUser, lawFirmData, dispatch } = useContext(RecordsContext)
   if (!isNewUser) navigate('/')
 
   const [password, setPassword] = useState('')
@@ -22,13 +22,16 @@ const NewUser = () => {
 
     updatePassword(password, lawFirmData.recordId)
       .then((resp) => {
-        setLoading(false)
         if (resp.error) {
+          setLoading(false)
           setPassword('')
           setErrorMsg('Error updating your password. Please try again.')
         } else {
-          // TODO: Update the local user.FirstTimeUser...and navigate away from here
-          // console.log('success', { resp, recordId: lawFirmData.recordId })
+          setSuccessMsg('Password successfully reset')
+          setTimeout(() => {
+            setLoading(false)
+            dispatch({ type: 'passwordUpdated' })
+          }, 1000)
         }
       })
       .catch(() => {

@@ -7,8 +7,9 @@ import Tooltip from './tooltip'
 
 const Header = () => {
   const { actionItems, lawFirmData } = useContext(RecordsContext)
+  const actionCount = typeof actionItems === 'string' ? 0 : actionItems.length
   const actionStyle =
-    actionItems.length < 100
+    actionCount < 100
       ? { height: 26, width: 26, top: '-14px', right: '-10px' }
       : { height: 24, width: 32, top: '-12px', right: '-16px' }
   return (
@@ -44,12 +45,12 @@ const Header = () => {
                 strokeLinejoin="round"
               />
             </svg>
-            {actionItems.length > 0 && (
+            {actionCount > 0 && (
               <div
                 className="box-border absolute bg-gsDarkOrange text-white text-xs border-4 border-gsGray flex justify-center items-center font-semibold"
                 style={{ ...actionStyle, borderRadius: 26 }}
               >
-                {actionItems.length < 100 ? actionItems.length : '99+'}
+                {actionCount < 100 ? actionCount : '99+'}
               </div>
             )}
           </button>
