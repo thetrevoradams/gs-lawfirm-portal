@@ -1,10 +1,12 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useEffect, useReducer, useContext } from 'react'
+import React, { useEffect, useReducer, useContext, useRef } from 'react'
+import DatePicker from 'react-datepicker'
 import ResponseBlock from './responseBlock'
 import StatusText from './statusText'
 import LoadingIconSwap from './loadingIconSwap'
 import { formatDate, addLegalAction } from '../utils'
 import { RecordsContext } from '../context/recordsContext'
+import 'react-datepicker/dist/react-datepicker.css'
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -35,6 +37,15 @@ const reducer = (state, action) => {
         ...state,
         actionVal: action.value,
       }
+    case 'dateValChanged': {
+      if (new Date(action.date) !== 'Invalid Date') {
+        return {
+          ...state,
+          dateVal: action.date,
+        }
+      }
+      return state
+    }
     case 'loading':
       return {
         ...state,
@@ -49,7 +60,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         actionVal: '',
-        dateVal: '',
+        dateVal: new Date(),
         addingAction: false,
       }
     case 'onSuccess': {
@@ -60,7 +71,7 @@ const reducer = (state, action) => {
         legalActions: newActions,
         displayedActions: newActions.length > 3 ? newActions.slice(0, 3) : newActions,
         actionVal: '',
-        dateVal: '',
+        dateVal: new Date(),
         addingAction: false,
         loading: false,
       }
@@ -71,12 +82,13 @@ const reducer = (state, action) => {
 }
 
 const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
+  const inputRef = useRef()
   const { dispatch: recordsDispatch } = useContext(RecordsContext)
   const [state, dispatch] = useReducer(reducer, {
     expanded: false,
     addingAction: false,
     actionVal: '',
-    dateVal: formatDate(new Date()),
+    dateVal: new Date(),
     legalActions: [],
     displayedActions: [],
     loading: false,
@@ -99,11 +111,12 @@ const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
-    }).format(new Date(dateVal))
+    }).format(dateVal)
     const itemHistory = [
       { date, response: actionVal, submittedBy: uid },
       ...JSON.parse(record.LegalActionStatus_app || '[]'),
     ]
+
     const data = await addLegalAction({
       recordId: record.recordId,
       response: actionVal,
@@ -118,7 +131,7 @@ const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
     } else {
       dispatch({ type: 'notLoading' })
 
-      // console.error('error', data)
+      console.error('error', data)
       setErrorMsg('There was an error saving your legal action.')
     }
   }
@@ -126,7 +139,7 @@ const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
   return (
     <div>
       <div className="flex flex-wrap justify-between items-center mb-6">
-        <h3 className="text-gsBlue font-semibold">Legal Actions</h3>
+        <h3 className="text-gsBlue font-semibold">Legal Action History</h3>
         <button
           type="button"
           className="text-sm bg-gsBlue text-white rounded-full py-2 px-3 flex items-center hover:bg-opacity-70"
@@ -144,14 +157,45 @@ const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
           <span>Legal Action</span>
         </button>
       </div>
-      {record.legalActionStatusDateFormatted && (
-        <small className="font-semibold text-gsGrayText">{record.legalActionStatusDateFormatted}</small>
-      )}
 
       {addingAction && (
         <div className="flex flex-col w-full p-3 my-4 bg-gsLightBg rounded shadow-md">
-          {/* TODO: CHANGE THIS TO ALLOW THEM TO ENTER A DATE */}
-          <small className="font-semibold text-gsBlue py-1 mb-2 flex-1">{formatDate(new Date())}</small>
+          <div className="flex items-center mb-2 w-28 relative border-b border-gsBlue">
+            <DatePicker
+              selected={dateVal}
+              onChange={(date) => dispatch({ type: 'dateValChanged', date })}
+              inputPlaceholder="Select a date"
+              showYearDropdown
+              dateFormat="MMM d, yyyy"
+              ref={inputRef}
+              maxDate={new Date()}
+              customInput={
+                <input
+                  className="text-gsBlue bg-gsLightBg text-sm hover:cursor-pointer"
+                  style={{ width: '5.6rem' }}
+                  placeholder={dateVal}
+                  onFocus={(e) => e.target.blur()}
+                />
+              }
+            />
+            <button
+              type="button"
+              className="absolute right-0 select-none"
+              onClick={() => inputRef?.current?.input?.focus()}
+            >
+              <svg width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M9 15h6.75M12.375 2.625a1.591 1.591 0 112.25 2.25L5.25 14.25l-3 .75.75-3 9.375-9.375z"
+                  stroke="#0AA0EF"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {/* <small className="font-semibold text-gsBlue py-1 mb-2 flex-1">{formatDate(new Date())}</small> */}
           <textarea
             className="placeholder-gsLightGray text-gsGray appearance-none rounded text-sm  hover:border-gsBlue focus:border-gsBlue focus:outline-none px-4 py-2 h-full w-full resize-none border border-gray-200 mb-2"
             placeholder="Legal Action Entry"

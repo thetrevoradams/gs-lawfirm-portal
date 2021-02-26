@@ -60,7 +60,7 @@ const IconButton = ({ icon = 'message', onClick, selected, urgent, title }) => {
   //   }
   // }
   return (
-    <Tooltip msg={title}>
+    <Tooltip msg={title} position={icon === 'file' ? 'top-left' : undefined}>
       <button
         onClick={handleClick}
         // onKeyPress={handleKeyPress}

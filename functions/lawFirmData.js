@@ -137,7 +137,6 @@ exports.handler = async (entry) => {
                 updateRecordWithAttachments(dataToken, { ...item.fieldData, recordId: item.recordId })
               )
             )
-            // console.log(`--- AFTER Promise FIRST record --- `, lawFirmRecords[0])
           }
 
           return {

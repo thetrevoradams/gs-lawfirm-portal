@@ -1,14 +1,14 @@
 import React from 'react'
 
-const FullPageSpinner = () => {
+const FullPageSpinner = ({ light = false }) => {
   return (
-    <div className="w-full h-full fixed block top-0 left-0 bg-gsGray z-50">
+    <div className={`w-full h-full fixed block top-0 left-0 z-50 ${light ? 'bg-gsLightBg' : 'bg-gsGray'}`}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="135"
         height="140"
         viewBox="0 0 135 140"
-        fill="#fff"
+        fill={light ? '#181B1F' : '#fff'}
         className="transform scale-50 opacity-50 top-1/3 my-0 mx-auto block relative"
       >
         <rect y="10" width="15" height="120" rx="6">

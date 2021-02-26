@@ -9,6 +9,10 @@
 .tooltip[position='top'] {
   @apply -mt-6;
 }
+.tooltip[position='top-left'] {
+  @apply -mt-6;
+  right: 12px;
+}
 .tooltip[position='bottom-left'] {
   bottom: -18px;
   right: 12px;

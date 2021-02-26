@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react'
-import { navigate } from '@reach/router'
 import ActionItem from '../components/actionItem'
 import Spinner from '../components/spinner'
 import { RecordsContext } from '../context/recordsContext'
@@ -8,8 +7,7 @@ import StatusText from '../components/statusText'
 import filterSearch from '../utils/searchUtil'
 
 const ActionItems = ({ uid }) => {
-  const { actionItems, searchTerm, isNewUser } = useContext(RecordsContext)
-  if (isNewUser) navigate('/setup')
+  const { actionItems, searchTerm } = useContext(RecordsContext)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const displayed =

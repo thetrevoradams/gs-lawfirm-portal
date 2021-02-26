@@ -30,7 +30,7 @@ const SectionRequests = ({ record, urgent }) => {
 
   return (
     <div>
-      <h3 className="text-gsBlue font-semibold mb-6">Information Requests</h3>
+      <h3 className="text-gsBlue font-semibold mb-6">Request History</h3>
       {urgent && (
         <button
           className="text-white bg-red-500 border-2 border-red-400 px-2 py-1 text-sm rounded hover:bg-red-400"

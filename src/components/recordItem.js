@@ -84,17 +84,17 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
           <IconButton
             icon="briefcase"
             onClick={onClick}
-            title="Legal Actions"
+            title="Legal Action History"
             selected={expandedSection === 'briefcase'}
           />
           <IconButton
             icon="message"
-            title="Information Requests"
+            title="Request History"
             onClick={onClick}
             selected={expandedSection === 'message'}
             urgent={urgentId === record.recordId}
           />
-          <IconButton icon="file" title="Attachments" onClick={onClick} selected={expandedSection === 'file'} />
+          <IconButton icon="file" title="Attached Documents" onClick={onClick} selected={expandedSection === 'file'} />
         </div>
       </div>
       <div ref={expanderRef} className="opacity-0 bg-white max-w-screen-lg lg:w-full mx-8 rounded-b recordExpander">

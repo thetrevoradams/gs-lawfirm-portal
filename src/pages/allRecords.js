@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react'
-import { navigate } from '@reach/router'
 import RecordItem from '../components/recordItem'
 import Spinner from '../components/spinner'
 import { RecordsContext } from '../context/recordsContext'
@@ -10,8 +9,7 @@ import Toast from '../components/toast'
 const AllRecords = ({ uid }) => {
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
-  const { records, searchTerm, isNewUser } = useContext(RecordsContext)
-  if (isNewUser) navigate('/setup')
+  const { records, searchTerm } = useContext(RecordsContext)
   const displayed =
     searchTerm && typeof records !== 'string' ? records.filter((r) => filterSearch({ searchTerm, r })) : records
   const loading = typeof records === 'string'

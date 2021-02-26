@@ -86,7 +86,7 @@ const RecordsProvider = ({ user, children }) => {
     lawFirmData: '',
     searchTerm: query.get('u') || '',
     urgentId: query.get('u'),
-    isNewUser: false,
+    isNewUser: 'loading',
   })
 
   const { records, actionItems, lawFirmData, searchTerm, urgentId, isNewUser } = state
