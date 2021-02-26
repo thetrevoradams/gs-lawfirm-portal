@@ -1,10 +1,10 @@
 [build]
   command = "yarn run build"
   functions = "functions"
-  publish = "dist"
+  publish = "build"
 
 [dev]
   targetPort = 3000
   port = 8888 # The port that the netlify dev will be accessible on
-  publish = "dist" # The path to your static content folder
+  publish = "build" # The path to your static content folder
   autoLaunch = true
