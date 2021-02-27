@@ -7,7 +7,7 @@ const submitResp = async ({ recordId, response, urgentId, itemHistory, date }) =
     const data = await submissionRaw.json()
     return { success: data.messages[0].message === 'OK' }
   } catch (error) {
-    console.error('error', error)
+    // console.error('error', error)
     return error
   }
 }
@@ -21,7 +21,7 @@ const addLegalAction = async ({ recordId, response, date, oldActions, itemHistor
     const data = await submissionRaw.json()
     return { success: data.messages[0].message === 'OK' }
   } catch (error) {
-    console.error('error', error)
+    // console.error('error', error)
     return error
   }
 }
