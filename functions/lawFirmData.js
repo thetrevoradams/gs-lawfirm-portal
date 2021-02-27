@@ -112,6 +112,7 @@ async function updateRecordWithAttachments(dataToken, record, index) {
 exports.handler = async (entry) => {
   const { uid } = JSON.parse(entry.body)
   try {
+    console.log('about to get id')
     const resp = await fetchClarisId()
 
     if (!resp.error) {
@@ -153,6 +154,7 @@ exports.handler = async (entry) => {
         }
       }
     }
+    console.log('error getting id', resp.error)
     return {
       statusCode: 500,
       body: JSON.stringify({ msg: resp.error }),
