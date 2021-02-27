@@ -20,7 +20,7 @@ const useRecords = (user) => {
             setLawFirmData(data.userLawFirmData)
           }
         })
-        .catch((err) => {
+        .catch(() => {
           // console.error('err', err)
         })
     }
