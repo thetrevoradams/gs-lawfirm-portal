@@ -117,6 +117,7 @@ exports.handler = async (entry) => {
     if (!resp.error) {
       // --- DATA TOKEN ---
       const tokenJson = await fetchToken(resp.clarisIdToken)
+      console.log(`exports.handler= -> tokenJson`, tokenJson)
       const dataToken = tokenJson.response.token
 
       if (dataToken) {
@@ -124,8 +125,10 @@ exports.handler = async (entry) => {
         const firmResp = await fetchUserLawFirm(dataToken, uid)
         const firmData = firmResp?.response?.data[0]
         const userLawFirmData = { ...firmData.fieldData, recordId: firmData.recordId }
+        console.log(`exports.handler= -> firmData`, firmData)
 
         if (userLawFirmData) {
+          console.log('about to fetch records')
           // --- GET LAW FIRM RECORDS ---
           const recordData = await fetchLawFirmData(dataToken, userLawFirmData.LawFirmMasterId)
           let lawFirmRecords = recordData
