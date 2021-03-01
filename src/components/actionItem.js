@@ -5,7 +5,7 @@ import Tooltip from './tooltip'
 import LoadingIconSwap from './loadingIconSwap'
 
 const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
-  const { dispatch, urgentId } = useContext(RecordsContext)
+  const { dispatch, urgentId, lawFirmData } = useContext(RecordsContext)
   const [resp, setResp] = useState('')
   const [loading, setLoading] = useState(false)
   const [containerHeight, setContainerHeight] = useState(1)
@@ -39,6 +39,8 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
       response: resp,
       date,
       itemHistory,
+      lawFirmData,
+      record,
     })
     setLoading(false)
     if (data.success) {

@@ -1,8 +1,17 @@
-const submitResp = async ({ recordId, response, urgentId, itemHistory, date }) => {
+const submitResp = async ({ recordId, response, urgentId, itemHistory, date, lawFirmData, record }) => {
   try {
     const submissionRaw = await fetch('/.netlify/functions/responseManager', {
       method: 'POST',
-      body: JSON.stringify({ recordId, response, urgentId, type: 'actionResp', itemHistory, date }),
+      body: JSON.stringify({
+        recordId,
+        response,
+        urgentId,
+        type: 'actionResp',
+        itemHistory,
+        date,
+        lawFirmData,
+        record,
+      }),
     })
     const data = await submissionRaw.json()
     return { success: data.messages[0].message === 'OK' }

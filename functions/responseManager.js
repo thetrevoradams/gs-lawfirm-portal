@@ -1,6 +1,10 @@
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 const fetch = require('isomorphic-fetch')
 require('dotenv').config()
+const mailgun = require('mailgun-js')({
+  apiKey: process.env.REACT_MAILGUN_KEY,
+  domain: 'guarantysolutions.com',
+})
 
 function asyncAuthenticateUser(cognitoUser, cognitoAuthenticationDetails) {
   return new Promise((resolve, reject) => {
@@ -49,9 +53,22 @@ async function fetchToken(clarisIdToken) {
   return tokenJson
 }
 
-async function submitResp({ dataToken, recordId, response, urgentId, itemHistory, date }) {
-  // TODO: Trigger email if 'urgentId' is present
-  console.log('submitResp -> urgentId', urgentId)
+function sendEmailNotification({ lawFirmData: { FirstName, LastName, FirmName }, record, response }) {
+  const data = {
+    from: 'noreply@guarantysolutions.com',
+    to: 'trevor@teton.dev',
+    subject: 'Urgent Request Response',
+    text: 'This is an html only email. Please enable html in your email client to view it.',
+    html: `<html lang="en"> <head> <meta charset="UTF-8" /> <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <title>Document</title> <style> body { background-color: #f1f5fb; display: flex; justify-content: center; width: 100%; height: 100%; } .container { margin-top: 30px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); color: #3b3b3f; background-color: white; height: max-content; overflow: hidden; } .content { padding: 14px; } .banner { padding: 14px 14px 0 14px; margin: 0; color: #E68917; text-transform: uppercase; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; } .fileContainer { padding: 8px 24px; border-radius: 8px; border: 1px solid#F7DCB9; width: max-content; } .fileItem span { margin: 0 0 6px 8px; } .resp { padding-bottom: 14px;} </style> </head> <body> <div class="container"><h3 class="banner">Urgent response submitted by ${FirstName} ${LastName} — ${FirmName}</h3> <div class="content"> <p>This response relates to the following file</p> <div class="fileContainer"> <p class="fileItem"><b>ClientID</b> <span>${record.ClientID}</span></p> <p class="fileItem"><b>ClientName</b> <span>${record.ClientName}</span></p> <p class="fileItem"><b>MasterID_fk</b> <span>${record.MasterID_fk}</span></p> <p class="fileItem"><b>CaseName</b> <span>${record.CaseName}</span></p> <p class="fileItem"><b>CounselFileNumber</b> <span>${record.CounselFileNumber}</span></p></div> <p class="fileItem resp"><b>Response</b> <span>${response}</span></p></div></div> </body> </html>`,
+  }
+
+  mailgun.messages().send(data, (error) => {
+    if (error) console.log(error)
+  })
+}
+
+async function submitResp({ dataToken, recordId, response, urgentId, itemHistory, date, lawFirmData, record }) {
+  if (urgentId) sendEmailNotification({ lawFirmData, record, response })
 
   const dataRaw = await fetch(`${process.env.REACT_DB_EDIT_URL}/${recordId}`, {
     method: 'PATCH',
@@ -91,7 +108,9 @@ async function addLegalAction({ dataToken, recordId, response, date, oldActions,
 }
 
 exports.handler = async (entry) => {
-  const { recordId, response, type, date, oldActions, itemHistory, urgentId } = JSON.parse(entry.body)
+  const { recordId, response, type, date, oldActions, itemHistory, urgentId, lawFirmData, record } = JSON.parse(
+    entry.body
+  )
   try {
     const resp = await fetchClarisId()
 
@@ -104,7 +123,16 @@ exports.handler = async (entry) => {
         let submissionResp = ''
         if (type === 'actionResp') {
           // --- SUBMIT ACTION RESP ---
-          submissionResp = await submitResp({ dataToken, recordId, response, itemHistory, urgentId, date })
+          submissionResp = await submitResp({
+            dataToken,
+            recordId,
+            response,
+            itemHistory,
+            urgentId,
+            date,
+            lawFirmData,
+            record,
+          })
         } else if (type === 'legalAction') {
           submissionResp = await addLegalAction({
             dataToken,

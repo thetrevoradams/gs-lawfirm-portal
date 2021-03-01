@@ -112,13 +112,11 @@ async function updateRecordWithAttachments(dataToken, record, index) {
 exports.handler = async (entry) => {
   const { uid } = JSON.parse(entry.body)
   try {
-    console.log('about to get id')
     const resp = await fetchClarisId()
 
     if (!resp.error) {
       // --- DATA TOKEN ---
       const tokenJson = await fetchToken(resp.clarisIdToken)
-      console.log(`exports.handler= -> tokenJson`, tokenJson)
       const dataToken = tokenJson.response.token
 
       if (dataToken) {
@@ -126,10 +124,8 @@ exports.handler = async (entry) => {
         const firmResp = await fetchUserLawFirm(dataToken, uid)
         const firmData = firmResp?.response?.data[0]
         const userLawFirmData = { ...firmData.fieldData, recordId: firmData.recordId }
-        console.log(`exports.handler= -> firmData`, firmData)
 
         if (userLawFirmData) {
-          console.log('about to fetch records')
           // --- GET LAW FIRM RECORDS ---
           const recordData = await fetchLawFirmData(dataToken, userLawFirmData.LawFirmMasterId)
           let lawFirmRecords = recordData
@@ -141,6 +137,7 @@ exports.handler = async (entry) => {
                 updateRecordWithAttachments(dataToken, { ...item.fieldData, recordId: item.recordId })
               )
             )
+            // console.log(`--- AFTER Promise FIRST record --- `, lawFirmRecords[0])
           }
 
           return {
@@ -154,7 +151,6 @@ exports.handler = async (entry) => {
         }
       }
     }
-    console.log('error getting id', resp.error)
     return {
       statusCode: 500,
       body: JSON.stringify({ msg: resp.error }),
