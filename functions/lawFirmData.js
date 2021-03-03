@@ -1,6 +1,9 @@
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 const fetch = require('isomorphic-fetch')
 require('dotenv').config()
+require('@babel/core').transformSync('code', {
+  plugins: ['@babel/plugin-proposal-optional-chaining'],
+})
 
 function asyncAuthenticateUser(cognitoUser, cognitoAuthenticationDetails) {
   return new Promise((resolve, reject) => {
