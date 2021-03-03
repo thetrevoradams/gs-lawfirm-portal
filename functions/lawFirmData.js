@@ -110,12 +110,12 @@
 // }
 
 exports.handler = async (event) => {
-  console.log('you called lawFirmData')
-  const { uid } = JSON.parse(event.body)
+  console.log('you called lawFirmData', event.body)
+  // const { uid } = JSON.parse(event.body)
   // console.log('with uid', uid)
   return {
     statusCode: 200,
-    body: JSON.stringify({ success: true, uid }),
+    body: JSON.stringify({ success: true }),
   }
   // try {
   //   const resp = await fetchClarisId()
