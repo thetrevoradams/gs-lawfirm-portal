@@ -93,7 +93,7 @@ async function updateRecordWithAttachments(dataToken, record, index) {
 
       // if (attachmentsRaw) {
       //   const json = await attachmentsRaw.json()
-      //   return { ...record, attachedFiles: json?.response?.data || [] }
+      //   return { ...record, attachedFiles: json.response ? json.response.data : [] }
       // }
 
       // --- FORMAT DATES ---
@@ -125,32 +125,29 @@ exports.handler = async (event) => {
       if (dataToken) {
         // --- GET USER'S LAW FIRM DETAILS ---
         const firmResp = await fetchUserLawFirm(dataToken, uid)
-        const firmData = firmResp?.response?.data[0]
+        const firmData = firmResp.response ? firmResp.response.data[0] : { fieldData: {} }
         const userLawFirmData = { ...firmData.fieldData, recordId: firmData.recordId }
 
-        if (userLawFirmData) {
+        if (firmData.recordId) {
           console.log('got userLawFirmData')
+          // --- GET LAW FIRM RECORDS ---
+          const recordData = await fetchLawFirmData(dataToken, userLawFirmData.LawFirmMasterId)
+          let lawFirmRecords = recordData
+          // Lousy Netlify functions don't support optional chaining or a babelrc
+          // that includes that plugin
+          if (recordData && recordData.response && recordData.response.data) {
+            // --- GET FILES ATTACHED TO CASES ---
+            lawFirmRecords = await Promise.all(
+              recordData.response.data.map((item) =>
+                updateRecordWithAttachments(dataToken, { ...item.fieldData, recordId: item.recordId })
+              )
+            )
+          }
+
           return {
             statusCode: 200,
-            body: JSON.stringify({ success: true }),
+            body: JSON.stringify({ lawFirmRecords, userLawFirmData }),
           }
-          // --- GET LAW FIRM RECORDS ---
-          //     const recordData = await fetchLawFirmData(dataToken, userLawFirmData.LawFirmMasterId)
-          //     let lawFirmRecords = recordData
-
-          //     if (recordData?.response?.data) {
-          //       // --- GET FILES ATTACHED TO CASES ---
-          //       lawFirmRecords = await Promise.all(
-          //         recordData.response.data.map((item) =>
-          //           updateRecordWithAttachments(dataToken, { ...item.fieldData, recordId: item.recordId })
-          //         )
-          //       )
-          //     }
-
-          //     return {
-          //       statusCode: 200,
-          //       body: JSON.stringify({ lawFirmRecords, userLawFirmData }),
-          //     }
         }
         console.log('got NO userLawFirmData')
         return {
