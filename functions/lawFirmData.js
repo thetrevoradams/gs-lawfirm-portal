@@ -110,7 +110,7 @@
 // }
 
 exports.handler = async (event) => {
-  console.log('you called lawFirmData', event.body)
+  console.log('you called lawFirmData', event.body.uid)
   // const { uid } = JSON.parse(event.body)
   // console.log('with uid', uid)
   return {
