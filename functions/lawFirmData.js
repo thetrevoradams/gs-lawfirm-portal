@@ -118,45 +118,45 @@ exports.handler = async (event) => {
     const resp = await fetchClarisId()
 
     if (!resp.error) {
-      console.log('got a token')
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ success: true }),
+      // --- DATA TOKEN ---
+      const tokenJson = await fetchToken(resp.clarisIdToken)
+      const dataToken = tokenJson.response.token
+
+      if (dataToken) {
+        console.log('got a data token')
+        return {
+          statusCode: 200,
+          body: JSON.stringify({ success: true }),
+        }
+        //   // --- GET USER'S LAW FIRM DETAILS ---
+        //   const firmResp = await fetchUserLawFirm(dataToken, uid)
+        //   const firmData = firmResp?.response?.data[0]
+        //   const userLawFirmData = { ...firmData.fieldData, recordId: firmData.recordId }
+
+        //   if (userLawFirmData) {
+        //     // --- GET LAW FIRM RECORDS ---
+        //     const recordData = await fetchLawFirmData(dataToken, userLawFirmData.LawFirmMasterId)
+        //     let lawFirmRecords = recordData
+
+        //     if (recordData?.response?.data) {
+        //       // --- GET FILES ATTACHED TO CASES ---
+        //       lawFirmRecords = await Promise.all(
+        //         recordData.response.data.map((item) =>
+        //           updateRecordWithAttachments(dataToken, { ...item.fieldData, recordId: item.recordId })
+        //         )
+        //       )
+        //     }
+
+        //     return {
+        //       statusCode: 200,
+        //       body: JSON.stringify({ lawFirmRecords, userLawFirmData }),
+        //     }
+        //   }
+        //   return {
+        //     statusCode: 500,
+        //     body: JSON.stringify({ msg: firmResp.msg }),
+        //   }
       }
-      // // --- DATA TOKEN ---
-      // const tokenJson = await fetchToken(resp.clarisIdToken)
-      // const dataToken = tokenJson.response.token
-
-      // if (dataToken) {
-      //   // --- GET USER'S LAW FIRM DETAILS ---
-      //   const firmResp = await fetchUserLawFirm(dataToken, uid)
-      //   const firmData = firmResp?.response?.data[0]
-      //   const userLawFirmData = { ...firmData.fieldData, recordId: firmData.recordId }
-
-      //   if (userLawFirmData) {
-      //     // --- GET LAW FIRM RECORDS ---
-      //     const recordData = await fetchLawFirmData(dataToken, userLawFirmData.LawFirmMasterId)
-      //     let lawFirmRecords = recordData
-
-      //     if (recordData?.response?.data) {
-      //       // --- GET FILES ATTACHED TO CASES ---
-      //       lawFirmRecords = await Promise.all(
-      //         recordData.response.data.map((item) =>
-      //           updateRecordWithAttachments(dataToken, { ...item.fieldData, recordId: item.recordId })
-      //         )
-      //       )
-      //     }
-
-      //     return {
-      //       statusCode: 200,
-      //       body: JSON.stringify({ lawFirmRecords, userLawFirmData }),
-      //     }
-      //   }
-      //   return {
-      //     statusCode: 500,
-      //     body: JSON.stringify({ msg: firmResp.msg }),
-      //   }
-      // }
     }
     console.log('error fetching Claris Id', resp) // output to netlify function log
     return {
