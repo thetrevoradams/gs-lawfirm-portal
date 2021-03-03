@@ -111,7 +111,8 @@ async function updateRecordWithAttachments(dataToken, record, index) {
 
 exports.handler = async (entry) => {
   console.log('you called lawFirmData')
-  const { uid } = JSON.parse(entry?.body)
+  const parsed = JSON.parse(entry?.body)
+  const uid = parsed.uid
   console.log('with uid', uid)
   try {
     const resp = await fetchClarisId()
@@ -152,12 +153,13 @@ exports.handler = async (entry) => {
         }
       }
     }
+    console.log('error fetching Claris Id', resp) // output to netlify function log
     return {
       statusCode: 500,
       body: JSON.stringify({ msg: resp.error }),
     }
   } catch (error) {
-    console.log(error) // output to netlify function log
+    console.log('you got an error', error) // output to netlify function log
     return {
       statusCode: 500,
       body: JSON.stringify({ msg: error }),
