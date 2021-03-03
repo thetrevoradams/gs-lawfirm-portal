@@ -111,7 +111,7 @@ async function updateRecordWithAttachments(dataToken, record, index) {
 
 exports.handler = async (entry) => {
   console.log('you called lawFirmData')
-  const { uid } = JSON.parse(entry.body)
+  const { uid } = JSON.parse(entry?.body)
   console.log('with uid', uid)
   try {
     const resp = await fetchClarisId()
