@@ -111,7 +111,7 @@
 
 exports.handler = async (event) => {
   console.log('you called lawFirmData')
-  const { uid } = JSON.parse(event?.body)
+  const { uid } = JSON.parse(event.body)
   // console.log('with uid', uid)
   return {
     statusCode: 200,
