@@ -109,11 +109,11 @@
 //   return record
 // }
 
-exports.handler = async (entry) => {
+exports.handler = async () => {
   console.log('you called lawFirmData')
-  const parsed = JSON.parse(entry?.body)
-  const uid = parsed.uid
-  console.log('with uid', uid)
+  // const parsed = JSON.parse(entry?.body)
+  // const uid = parsed.uid
+  // console.log('with uid', uid)
   return {
     statusCode: 200,
     body: JSON.stringify({ success: true }),
