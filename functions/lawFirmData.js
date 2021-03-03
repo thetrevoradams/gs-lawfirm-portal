@@ -110,9 +110,7 @@ async function updateRecordWithAttachments(dataToken, record, index) {
 }
 
 exports.handler = async (event) => {
-  console.log('you called lawFirmData', event.body)
   const { uid } = JSON.parse(event.body)
-  console.log('with uid', uid)
 
   try {
     const resp = await fetchClarisId()
@@ -129,7 +127,6 @@ exports.handler = async (event) => {
         const userLawFirmData = { ...firmData.fieldData, recordId: firmData.recordId }
 
         if (firmData.recordId) {
-          console.log('got userLawFirmData')
           // --- GET LAW FIRM RECORDS ---
           const recordData = await fetchLawFirmData(dataToken, userLawFirmData.LawFirmMasterId)
           let lawFirmRecords = recordData
@@ -149,14 +146,12 @@ exports.handler = async (event) => {
             body: JSON.stringify({ lawFirmRecords, userLawFirmData }),
           }
         }
-        console.log('got NO userLawFirmData')
         return {
           statusCode: 500,
           body: JSON.stringify({ msg: firmResp.msg }),
         }
       }
     }
-    console.log('error fetching Claris Id', resp) // output to netlify function log
     return {
       statusCode: 500,
       body: JSON.stringify({ msg: resp.error }),
