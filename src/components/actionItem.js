@@ -59,14 +59,14 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
   }, [containerRef])
 
   return (
-    <div className="flex flex-row rounded bg-white mx-8 mb-4 max-w-screen-lg lg:w-full">
+    <div className="flex flex-row rounded bg-white mx-8 mb-4 max-w-screen-lg lg:w-full overflow-hidden">
       <div className="flex flex-col text-sm pl-6 py-2 actionItemDeets relative" ref={containerRef}>
         <div className="font-normal text-gsOrangeGray">Case</div>
         <span>
-          {record.CaseName.split(',').map((name, index) => (
+          {record.CaseName.split('\r').map((name, index) => (
             // eslint-disable-next-line react/no-array-index-key
             <p key={`${record.recordId}_${index}`} className="text-gsDarkOrange opacity-80 font-semibold">
-              {name}
+              {name}{' '}
             </p>
           ))}
         </span>
@@ -105,7 +105,9 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
               <small className="font-semibold text-gsGrayText">{record.updateRequestDateFormatted}</small>
             )}
           </div>
-          <div className="text-sm text-gsGrayText">{record.UpdateRequest}</div>
+          <div className="text-sm text-gsGrayText">
+            {record.UpdateRequest.replace(/[\n\r]{2,}/g, '\r').replace('\r', ' ')}
+          </div>
         </div>
         <div className="p-2 mx-4">
           <textarea

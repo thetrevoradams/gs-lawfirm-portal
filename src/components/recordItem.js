@@ -72,7 +72,7 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
           style={{ gridTemplateColumns: '280px 185px 50px' }}
         >
           <div className="w-60">
-            {record.CaseName.split(',').map((name, index) => (
+            {record.CaseName.split('\r').map((name, index) => (
               // eslint-disable-next-line react/no-array-index-key
               <p key={`r${record.recordId}_${index}`}>{name}</p>
             ))}

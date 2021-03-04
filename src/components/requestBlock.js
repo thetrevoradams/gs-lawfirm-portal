@@ -28,7 +28,7 @@ const RequestBlock = ({ msg, date, wasUrgent }) => {
           </Tooltip>
         )}
       </div>
-      <p className="text-sm ">{msg}</p>
+      <p className="text-sm ">{msg.replace(/[\n\r]{2,}/g, '\r').replace('\r', ' ')}</p>
     </div>
   )
 }

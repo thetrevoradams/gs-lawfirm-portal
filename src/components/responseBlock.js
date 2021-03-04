@@ -25,7 +25,7 @@ const ResponseBlock = ({ msg, date, showIcon }) => {
         {msg ? (
           <>
             <small className="font-semibold text-gsGrayText mb-2">{date || 'Unknown Date'}</small>
-            <p className="text-sm ">{msg}</p>
+            <p className="text-sm ">{msg.replace(/[\n\r]{2,}/g, '\r').replace('\r', ' ')}</p>
           </>
         ) : (
           <>

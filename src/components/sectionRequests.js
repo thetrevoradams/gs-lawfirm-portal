@@ -9,12 +9,23 @@ import { formatDate } from '../utils'
 const SectionRequests = ({ record, urgent }) => {
   const [expanded, setExpanded] = useState(false)
   const requestHistory = record.requestHistory ? JSON.parse(record.requestHistory) : ''
-  const oldRequest =
+  const pendingResponse =
     record.UpdateRequest && !record.UpdateResponse
       ? [
           {
             reqDate: record.updateRequestDateFormatted,
             reqMsg: record.UpdateRequest,
+          },
+        ]
+      : []
+  const oldRequest =
+    record.UpdateRequest && record.UpdateResponse && !requestHistory
+      ? [
+          {
+            reqDate: record.updateRequestDateFormatted,
+            reqMsg: record.UpdateRequest,
+            respDate: record.updateResponseDateFormatted,
+            respMsg: record.UpdateResponse,
           },
         ]
       : []
@@ -25,7 +36,7 @@ const SectionRequests = ({ record, urgent }) => {
         respDate: formatDate(item.respDate),
       }))
     : requestHistory
-  const reqs = [...oldRequest, ...formattedReqHistory]
+  const reqs = [...pendingResponse, ...oldRequest, ...formattedReqHistory]
   const displayedRequests = reqs.length > 3 ? reqs.slice(0, 3) : reqs
 
   return (
@@ -55,7 +66,6 @@ const SectionRequests = ({ record, urgent }) => {
             {respMsg ? (
               <ResponseBlock msg={respMsg} date={respDate} showIcon />
             ) : (
-              // <ResponseBlock customMsg={respMsg} date={respDate} showIcon />
               <div className="flex flex-col">
                 <small className="font-semibold text-gsOrange mb-2">Awaiting your response</small>
                 <button
