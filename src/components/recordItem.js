@@ -77,8 +77,8 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
               <p key={`r${record.recordId}_${index}`}>{name}</p>
             ))}
           </div>
-          <div className={record.CounselFileNumber ? '' : 'opacity-50'}>{record.CounselFileNumber || 'Unknown'}</div>
-          <div>{record['Judgments 2::JudgmentRecordingState']}</div>
+          <div className={record.CounselFileNumber ? '' : 'opacity-50'}>{record.CounselFileNumber}</div>
+          <div>{record['JudgmentMaster::JudgmentRecordingState']}</div>
         </div>
         <div className="space-x-5 flex items-center">
           <IconButton
@@ -102,7 +102,9 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
           <SectionLegal record={record} setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg} uid={uid} />
         )}
         {expandedSection === 'message' && <SectionRequests urgent={urgentId === record.recordId} record={record} />}
-        {expandedSection === 'file' && <SectionAttachment record={record} />}
+        {expandedSection === 'file' && (
+          <SectionAttachment record={record} setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg} />
+        )}
       </div>
     </>
   )

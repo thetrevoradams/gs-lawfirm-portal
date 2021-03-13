@@ -21,19 +21,19 @@ function AppWrapper({ user }) {
           {isNewUser ? (
             <NewUser uid={user?.uid} />
           ) : (
-            <>
+            <div className="flex flex-col bg-gsLightBg min-h-screen">
               <div className="sticky top-0 z-10">
                 <Header />
                 <Nav />
               </div>
-              <div className="flex flex-col xl:items-center bg-gsLightBg">
+              <div className="flex flex-col xl:items-center">
                 <Router>
                   <ActionItems path="/" uid={user?.uid} />
                   <AllRecords path="/records" uid={user?.uid} />
                   <NotFound default />
                 </Router>
               </div>
-            </>
+            </div>
           )}
         </>
       )}

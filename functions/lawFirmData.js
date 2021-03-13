@@ -78,23 +78,34 @@ function formatDate(date) {
   return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(date))
 }
 
-async function updateRecordWithAttachments(dataToken, record, index) {
+async function updateRecordWithAttachments(dataToken, record) {
   if (record.RecordID_fk) {
     let attachmentsRaw
     try {
-      // attachmentsRaw = await fetch(`${process.env.REACT_DB_FILES_URL}/_find`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     Authorization: `Bearer ${dataToken}`,
-      //   },
-      //   body: JSON.stringify({ query: [{ RecordID_fk: record.RecordID_fk }] }),
-      // })
+      attachmentsRaw = await fetch(`${process.env.REACT_DB_FILES_URL}/_find`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${dataToken}`,
+        },
+        body: JSON.stringify({ query: [{ RecordID_fk: record.RecordID_fk }] }),
+      })
 
-      // if (attachmentsRaw) {
-      //   const json = await attachmentsRaw.json()
-      //   return { ...record, attachedFiles: json.response ? json.response.data : [] }
-      // }
+      if (attachmentsRaw) {
+        const json = await attachmentsRaw.json()
+        let attachments = []
+        const hasAttachments = json.response && json.response.data
+        if (hasAttachments) console.log('--- record.recordId --- ', record.recordId)
+        attachments = json.response?.data?.map((file) => {
+          console.log('attachment id', file.recordId)
+          return {
+            ...file.fieldData,
+            url: file.fieldData['Attachment | Container'] || '',
+            // attachementRecordId: file.recordId,
+          }
+        })
+        return { ...record, attachments }
+      }
 
       // --- FORMAT DATES ---
       const { LegalActionStatusDate, UpdateRequestDate, UpdateResponseDate } = record
@@ -104,6 +115,7 @@ async function updateRecordWithAttachments(dataToken, record, index) {
       return { ...record, legalActionStatusDateFormatted, updateRequestDateFormatted, updateResponseDateFormatted }
     } catch (error) {
       console.log('error', { error, attachmentsRaw, fk: record.RecordID_fk })
+      return record
     }
   }
   return record
@@ -140,6 +152,7 @@ exports.handler = async (event) => {
               )
             )
           }
+          console.log(lawFirmRecords[0])
 
           return {
             statusCode: 200,
@@ -148,19 +161,19 @@ exports.handler = async (event) => {
         }
         return {
           statusCode: 500,
-          body: JSON.stringify({ msg: firmResp.msg }),
+          body: JSON.stringify({ err: firmResp.msg }),
         }
       }
     }
     return {
       statusCode: 500,
-      body: JSON.stringify({ msg: resp.error }),
+      body: JSON.stringify({ err: resp.error }),
     }
   } catch (error) {
     console.log('you got an error', error) // output to netlify function log
     return {
       statusCode: 500,
-      body: JSON.stringify({ msg: error }),
+      body: JSON.stringify({ err: error }),
     }
   }
 }

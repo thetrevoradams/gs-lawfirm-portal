@@ -25,7 +25,7 @@ const Header = () => {
         )}
       </div>
       <div className="flex flex-row items-center">
-        <Tooltip msg="View action items" position="bottom-left">
+        <Tooltip msg="View action items" position="bottom">
           <button
             type="button"
             className="focus:ring-2 ring-text-gsBlue outline-none border-none relative"

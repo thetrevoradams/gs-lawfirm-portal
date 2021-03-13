@@ -5,7 +5,7 @@ const filterSearch = ({ searchTerm, r }) => {
     rx.test(r.CaseName) ||
     rx.test(r.CounselFileNumber) ||
     rx.test(r.recordId) ||
-    rx.test(r['Judgments 2::JudgmentRecordingState']) ||
+    rx.test(r['JudgmentMaster::JudgmentRecordingState']) ||
     rx.test(r.JudgmentState) ||
     rx.test(r.LegalActionStatus) ||
     rx.test(r.LegalActionStatusDate) ||

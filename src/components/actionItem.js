@@ -74,7 +74,7 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
         <span className="text-gsDarkOrange opacity-80 font-semibold">{record.CounselFileNumber}</span>
         <div className="font-normal text-gsOrangeGray mt-2">State</div>
         <span className="text-gsDarkOrange opacity-80 font-semibold">
-          {record['Judgments 2::JudgmentRecordingState']}
+          {record['JudgmentMaster::JudgmentRecordingState']}
         </span>
         <div
           className="actionItemsDeetsTriangle"

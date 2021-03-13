@@ -127,11 +127,11 @@ const SectionLegal = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
     if (data.success) {
       dispatch({ type: 'onSuccess' })
       recordsDispatch({ type: 'updateLegalActions', itemHistory, recordId: record.recordId })
-      setSuccessMsg('Successfully saved your response.')
+      setSuccessMsg('Successfully saved your response')
     } else {
       dispatch({ type: 'notLoading' })
       // console.error('error', data)
-      setErrorMsg('There was an error saving your legal action.')
+      setErrorMsg('There was an error saving your legal action')
     }
   }
 

@@ -8,7 +8,17 @@ function useQuery() {
 const reducer = (state, action) => {
   switch (action.type) {
     case 'init': {
-      const { newRecords: records, newLawFirm: lawFirmData } = action
+      const { newRecords: records, newLawFirm: lawFirmData, error } = action
+      if (error) {
+        console.log(`reducer -> error`, error)
+        return {
+          ...state,
+          records: [],
+          actionItems: [],
+          isNewUser: false,
+          error: true,
+        }
+      }
       const oldActionItems = records.filter((item) => item.UpdateRequest && !item.UpdateResponse)
 
       let newActionItems = []
@@ -78,7 +88,7 @@ const RecordsContext = createContext()
 
 const RecordsProvider = ({ user, children }) => {
   const query = useQuery()
-  const { records: newRecords, lawFirmData: newLawFirm } = useRecords(user)
+  const { records: newRecords, lawFirmData: newLawFirm, error } = useRecords(user)
 
   const [state, dispatch] = useReducer(reducer, {
     records: 'loading',
@@ -93,9 +103,9 @@ const RecordsProvider = ({ user, children }) => {
 
   useEffect(() => {
     if (typeof newRecords !== 'string') {
-      dispatch({ type: 'init', newRecords, newLawFirm })
+      dispatch({ type: 'init', newRecords, newLawFirm, error })
     }
-  }, [newLawFirm, newRecords])
+  }, [newLawFirm, newRecords, error])
 
   return (
     <RecordsContext.Provider
@@ -107,6 +117,7 @@ const RecordsProvider = ({ user, children }) => {
         searchTerm,
         urgentId,
         isNewUser,
+        error,
       }}
     >
       {children}

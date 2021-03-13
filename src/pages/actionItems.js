@@ -7,7 +7,7 @@ import StatusText from '../components/statusText'
 import filterSearch from '../utils/searchUtil'
 
 const ActionItems = ({ uid }) => {
-  const { actionItems, searchTerm } = useContext(RecordsContext)
+  const { actionItems, searchTerm, error } = useContext(RecordsContext)
   const [errorMsg, setErrorMsg] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const displayed =
@@ -17,7 +17,7 @@ const ActionItems = ({ uid }) => {
   const loading = typeof actionItems === 'string'
 
   return (
-    <div className="w-screen max-w-screen-lg h-full min-h-screen py-6 flex flex-col">
+    <div className="w-screen max-w-screen-lg h-full py-6 flex flex-col">
       <>
         {errorMsg && <Toast type="error" msg={errorMsg} onComplete={setErrorMsg} />}
         {successMsg && <Toast type="success" msg={successMsg} onComplete={setSuccessMsg} />}
@@ -27,7 +27,9 @@ const ActionItems = ({ uid }) => {
           <>
             {!actionItems && <StatusText text="Error fetching data. Please refresh the page to try again" />}
             {actionItems?.length <= 0 ? (
-              <StatusText text="No records to display" />
+              <StatusText
+                text={error ? 'Error fetching data. Please refresh the page to try again.' : 'No records to display'}
+              />
             ) : (
               <div className="min-w-screen-lg">
                 <div className="flex flex-wrap max-w-screen-lg lg:w-full">

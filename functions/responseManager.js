@@ -1,3 +1,4 @@
+const fs = require('fs').promises
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js')
 const fetch = require('isomorphic-fetch')
 require('dotenv').config()
@@ -107,10 +108,67 @@ async function addLegalAction({ dataToken, recordId, response, date, oldActions,
   return json
 }
 
+// async function attachFile({ dataToken, file, recordId }) {
+//   const dataRaw = await fetch(
+//     `${process.env.REACT_DB_FILES_URL}/records/${recordId}/containers/Attachment%20%7C%20Container`,
+//     {
+//       method: 'POST',
+//       headers: {
+//         Authorization: `Bearer ${dataToken}`,
+//       },
+//       body: file,
+//     }
+//   )
+//   const json = await dataRaw.json()
+//   console.log(`attachFile -> json`, json)
+//   const resp = json.messages[0].code === 0 ? json : ''
+//   return resp
+// }
+
+async function createAttachment({ dataToken, record, fileMetaData }) {
+  const { RecordID_fk: recordId, MasterID_fk: masterId, ClientName, ClientID } = record
+
+  const dataRaw = await fetch(`${process.env.REACT_DB_FILES_URL}/records`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${dataToken}`,
+    },
+    body: JSON.stringify({
+      fieldData: {
+        FileDescription: fileMetaData.name || '',
+        RecordID_fk: recordId || '',
+        MasterID_fk: masterId || '',
+        ClientName,
+        ClientID,
+      },
+    }),
+  })
+  const json = await dataRaw.json()
+  console.log(`uploadFile -> json`, json)
+  if (json.response.recordId) {
+    // const attachResp = await attachFile({ dataToken, file, recordId: json.response.recordId })
+    return {
+      dataToken,
+      endpoint: `${process.env.REACT_DB_FILES_URL}/records/${recordId}/containers/Attachment%20%7C%20Container`,
+    }
+  }
+  return ''
+}
+
 exports.handler = async (entry) => {
-  const { recordId, response, type, date, oldActions, itemHistory, urgentId, lawFirmData, record } = JSON.parse(
-    entry.body
-  )
+  const {
+    recordId,
+    response,
+    type,
+    date,
+    oldActions,
+    itemHistory,
+    urgentId,
+    lawFirmData,
+    record,
+    fileMetaData,
+  } = JSON.parse(entry.body)
   try {
     const resp = await fetchClarisId()
 
@@ -142,6 +200,12 @@ exports.handler = async (entry) => {
             oldActions,
             itemHistory,
           })
+        } else if (type === 'addAttachment') {
+          submissionResp = await createAttachment({
+            dataToken,
+            record,
+            fileMetaData,
+          })
         }
         if (submissionResp) {
           return {
@@ -149,12 +213,14 @@ exports.handler = async (entry) => {
             body: JSON.stringify(submissionResp),
           }
         }
+        console.log('submissionResp error resp', submissionResp)
         return {
           statusCode: 500,
           body: JSON.stringify({ msg: submissionResp.msg }),
         }
       }
     }
+    console.log('error resp', resp)
     return {
       statusCode: 500,
       body: JSON.stringify({ msg: resp.error }),

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
 const useRecords = (user) => {
+  const [error, setError] = useState(false)
   const [records, setRecords] = useState('loading')
   const [lawFirmData, setLawFirmData] = useState('loading')
   useEffect(() => {
@@ -13,6 +14,10 @@ const useRecords = (user) => {
           return resp.json()
         })
         .then((data) => {
+          if (data?.err) {
+            setRecords([])
+            setError(true)
+          }
           if (data?.lawFirmRecords?.length) {
             setRecords(data.lawFirmRecords)
           }
@@ -20,12 +25,12 @@ const useRecords = (user) => {
             setLawFirmData(data.userLawFirmData)
           }
         })
-        .catch(() => {
-          // console.error('err', err)
+        .catch((err) => {
+          console.error('err', err)
         })
     }
   }, [user])
-  return { records, lawFirmData }
+  return { records, lawFirmData, error }
 }
 
 export default useRecords
