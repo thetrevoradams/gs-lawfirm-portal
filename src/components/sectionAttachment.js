@@ -11,7 +11,7 @@ import { addAttachment } from '../utils'
 //   })
 
 const SectionAttachments = ({ record, setErrorMsg, setSuccessMsg }) => {
-  const [attachments, setAttachements] = useState(record.attachments || [])
+  const [attachments, setAttachments] = useState(record.attachments || [])
   const inputRef = useRef()
 
   const handleFileInput = async (e) => {
@@ -30,8 +30,8 @@ const SectionAttachments = ({ record, setErrorMsg, setSuccessMsg }) => {
         })
         if (data.success) {
           setSuccessMsg('Successfully uploaded file')
-          // TODO: get new file url to link new "attachment"
-          setAttachements((a) => [...a])
+          // NOTE: get new file url to link new "attachment"
+          setAttachments((a) => [...a])
         } else {
           setErrorMsg('There was an error uploading your file. Please try again')
         }

@@ -10,7 +10,6 @@ const reducer = (state, action) => {
     case 'init': {
       const { newRecords: records, newLawFirm: lawFirmData, error } = action
       if (error) {
-        console.log(`reducer -> error`, error)
         return {
           ...state,
           records: [],

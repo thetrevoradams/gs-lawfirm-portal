@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const submitResp = async ({ recordId, response, urgentId, itemHistory, date, lawFirmData, record }) => {
   try {
     const submissionRaw = await fetch('/.netlify/functions/responseManager', {
