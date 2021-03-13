@@ -16,7 +16,6 @@ const SectionAttachments = ({ record, setErrorMsg, setSuccessMsg }) => {
 
   const handleFileInput = async (e) => {
     if (e.target.files) {
-      console.log('data', { file: e.target.files[0] })
       try {
         const file = e.target.files[0]
         const formData = new FormData()
