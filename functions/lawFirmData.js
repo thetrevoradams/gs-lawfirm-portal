@@ -96,14 +96,11 @@ async function updateRecordWithAttachments(dataToken, record) {
         let attachments = []
         const hasAttachments = json.response && json.response.data
         if (hasAttachments) {
-          attachments = json.response?.data?.map((file) => {
-            // console.log('attachment id', file.recordId)
-            return {
-              ...file.fieldData,
-              url: file.fieldData['Attachment | Container'] || '',
-              // attachementRecordId: file.recordId,
-            }
-          })
+          attachments = json.response.data.map((file) => ({
+            ...file.fieldData,
+            url: file.fieldData['Attachment | Container'] || '',
+            // attachmentRecordId: file.recordId,
+          }))
         }
         return { ...record, attachments }
       }
