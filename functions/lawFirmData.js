@@ -95,15 +95,16 @@ async function updateRecordWithAttachments(dataToken, record) {
         const json = await attachmentsRaw.json()
         let attachments = []
         const hasAttachments = json.response && json.response.data
-        if (hasAttachments) console.log('--- record.recordId --- ', record.recordId)
-        attachments = json.response?.data?.map((file) => {
-          console.log('attachment id', file.recordId)
-          return {
-            ...file.fieldData,
-            url: file.fieldData['Attachment | Container'] || '',
-            // attachementRecordId: file.recordId,
-          }
-        })
+        if (hasAttachments) {
+          attachments = json.response?.data?.map((file) => {
+            // console.log('attachment id', file.recordId)
+            return {
+              ...file.fieldData,
+              url: file.fieldData['Attachment | Container'] || '',
+              // attachementRecordId: file.recordId,
+            }
+          })
+        }
         return { ...record, attachments }
       }
 
@@ -152,7 +153,7 @@ exports.handler = async (event) => {
               )
             )
           }
-          console.log(lawFirmRecords[0])
+          // console.log(lawFirmRecords[0])
 
           return {
             statusCode: 200,
