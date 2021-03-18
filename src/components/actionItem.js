@@ -120,7 +120,7 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
           />
         </div>
       </div>
-      <Tooltip msg={resp ? 'Submit response' : 'Enter your response before submitting'} position="bottom-left">
+      <Tooltip msg={resp ? 'Submit response' : 'Enter your response before submitting'} position="left">
         <button
           type="button"
           disabled={!resp}

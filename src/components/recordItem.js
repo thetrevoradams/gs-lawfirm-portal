@@ -102,9 +102,7 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
           <SectionLegal record={record} setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg} uid={uid} />
         )}
         {expandedSection === 'message' && <SectionRequests urgent={urgentId === record.recordId} record={record} />}
-        {expandedSection === 'file' && (
-          <SectionAttachment record={record} setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg} />
-        )}
+        {expandedSection === 'file' && <SectionAttachment record={record} />}
       </div>
     </>
   )

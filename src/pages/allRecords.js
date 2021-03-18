@@ -41,7 +41,7 @@ const AllRecords = ({ uid }) => {
                   )}
                 </div>
                 <div
-                  className="font-normal text-gsLightGray grid text-sm pl-5 py-4 mx-8 sticky bg-gsLightBg z-10 border-b border-gsLightGray border-opacity-10"
+                  className="font-normal text-gsLightGray grid text-sm pl-5 py-4 mx-8 sticky bg-gsLightBg z-10 border-b border-gsLightGray border-opacity-10 w-full"
                   style={{ gridTemplateColumns: '280px 185px auto', top: '131px' }}
                 >
                   <span>Case Name</span>

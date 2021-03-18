@@ -14,6 +14,10 @@
 .tooltip[position='top-left'] {
   right: 2px;
 }
+.tooltip[position='left'] {
+  right: 92px;
+  top: 40px;
+}
 .tooltip[position='bottom-left'],
 .tooltip[position='bottom'] {
   top: 40px;
@@ -47,6 +51,11 @@
 }
 .tooltip[position='top-left']::before {
   right: 8px;
+}
+.tooltip[position='left']::before {
+  right: -22px;
+  top: 3px;
+  border-color: transparent transparent transparent #0AA0EF;
 }
 .tooltip[position='bottom']::before,
 .tooltip[position='bottom-left']::before {

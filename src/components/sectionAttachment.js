@@ -1,72 +1,12 @@
-import React, { useRef, useState } from 'react'
+import React from 'react'
 import StatusText from './statusText'
-import { addAttachment } from '../utils'
 
-// const toBase64 = (file) =>
-//   new Promise((resolve, reject) => {
-//     const reader = new FileReader()
-//     reader.readAsDataURL(file)
-//     reader.onload = () => resolve(reader.result)
-//     reader.onerror = (error) => reject(error)
-//   })
+const SectionAttachments = ({ record }) => {
+  const attachments = record.attachments || []
 
-const SectionAttachments = ({ record, setErrorMsg, setSuccessMsg }) => {
-  const [attachments, setAttachments] = useState(record.attachments || [])
-  const inputRef = useRef()
-
-  const handleFileInput = async (e) => {
-    if (e.target.files) {
-      try {
-        const file = e.target.files[0]
-        const formData = new FormData()
-        formData.append('upload', file)
-        // const encodedFile = await toBase64(e.target.files[0])
-
-        const data = await addAttachment({
-          record,
-          file: formData,
-          fileMetaData: { name: file.name, mimeType: file.type },
-        })
-        if (data.success) {
-          setSuccessMsg('Successfully uploaded file')
-          // NOTE: get new file url to link new "attachment"
-          setAttachments((a) => [...a])
-        } else {
-          setErrorMsg('There was an error uploading your file. Please try again')
-        }
-      } catch (error) {
-        setErrorMsg('There was an error uploading your file. Please try again')
-      }
-    }
-  }
   return (
     <div>
-      <div className="flex flex-wrap justify-between items-center mb-6">
-        <h3 className="text-gsBlue font-semibold">Attached Documents</h3>
-        <input
-          type="file"
-          onChange={handleFileInput}
-          ref={inputRef}
-          className="hidden"
-          accept=".xlsx,.xls,.doc, .docx,.ppt, .pptx,.txt,.pdf"
-        />
-        <button
-          type="button"
-          className="text-sm bg-gsBlue text-white rounded-full py-2 px-3 flex items-center hover:bg-opacity-70"
-          onClick={() => inputRef?.current?.click()}
-        >
-          <svg width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M9 3.75v10.5M3.75 9h10.5"
-              stroke="#fff"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <span>Upload Document</span>
-        </button>
-      </div>
+      <h3 className="text-gsBlue font-semibold mb-6">Attached Documents</h3>
       {!attachments.length || (attachments.length === 1 && !attachments[0].url) ? (
         <StatusText text="No documents have been attached to this record." />
       ) : (
