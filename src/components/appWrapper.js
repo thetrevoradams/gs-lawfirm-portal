@@ -1,5 +1,5 @@
-import React, { useContext } from 'react'
-import { Router } from '@reach/router'
+import React, { useContext, useEffect } from 'react'
+import { Router, globalHistory } from '@reach/router'
 import NotFound from '../pages/notFound'
 import Header from './header'
 import Nav from './nav'
@@ -12,6 +12,13 @@ const NewUser = React.lazy(() => import('../pages/newUser'))
 
 function AppWrapper({ user }) {
   const { records, isNewUser } = useContext(RecordsContext)
+  useEffect(() => {
+    const historyUnsubscribe = globalHistory.listen(({ action }) => {
+      if (action === 'PUSH') window.scrollTo(0, 0)
+    })
+    return historyUnsubscribe
+  }, [])
+
   return (
     <>
       {typeof records === 'string' || typeof isNewUser === 'string' ? (
@@ -27,7 +34,7 @@ function AppWrapper({ user }) {
                 <Nav />
               </div>
               <div className="flex flex-col xl:items-center">
-                <Router>
+                <Router primary={false}>
                   <ActionItems path="/" uid={user?.uid} />
                   <AllRecords path="/records" uid={user?.uid} />
                   <NotFound default />
