@@ -1,6 +1,5 @@
-import React, { useRef, useReducer, useContext } from 'react'
+import React, { useRef, useReducer } from 'react'
 import IconButton from './iconButton'
-import { RecordsContext } from '../context/recordsContext'
 import SectionLegal from './sectionLegal'
 import SectionRequests from './sectionRequests'
 import SectionAttachment from './sectionAttachment'
@@ -23,8 +22,6 @@ const reducer = (state, action) => {
 }
 
 const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
-  const { urgentId } = useContext(RecordsContext)
-
   const [state, dispatch] = useReducer(reducer, { expanded: false, expandedSection: '' })
   const expanderRef = useRef()
   const containerRef = useRef()
@@ -64,7 +61,7 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
       <div
         ref={containerRef}
         className={`flex flex-row justify-between bg-white mx-8 recordItem max-w-screen-lg lg:w-full p-5 z-10 ${
-          urgentId === record.recordId ? 'border-l-4 border-red-400' : 'border-b border-gsLightGray border-opacity-20'
+          record.UrgentRequest ? 'border-l-4 border-red-400' : 'border-b border-gsLightGray border-opacity-20'
         }`}
       >
         <div
@@ -78,7 +75,7 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
             ))}
           </div>
           <div className={record.CounselFileNumber ? '' : 'opacity-50'}>{record.CounselFileNumber}</div>
-          <div>{record['JudgmentMaster::JudgmentRecordingState']}</div>
+          <div>{record['GS JudgmentMaster::JudgmentRecordingState']}</div>
         </div>
         <div className="space-x-5 flex items-center">
           <IconButton
@@ -92,7 +89,7 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
             title="Request History"
             onClick={onClick}
             selected={expandedSection === 'message'}
-            urgent={urgentId === record.recordId}
+            urgent={Boolean(record.UrgentRequest)}
           />
           <IconButton icon="file" title="Attached Documents" onClick={onClick} selected={expandedSection === 'file'} />
         </div>
@@ -101,7 +98,7 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
         {expandedSection === 'briefcase' && (
           <SectionLegal record={record} setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg} uid={uid} />
         )}
-        {expandedSection === 'message' && <SectionRequests urgent={urgentId === record.recordId} record={record} />}
+        {expandedSection === 'message' && <SectionRequests urgent={record.UrgentRequest} record={record} />}
         {expandedSection === 'file' && <SectionAttachment record={record} />}
       </div>
     </>

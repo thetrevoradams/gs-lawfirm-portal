@@ -44,11 +44,38 @@ const SectionRequests = ({ record, urgent }) => {
       <h3 className="text-gsBlue font-semibold mb-6">Request History</h3>
       {urgent && (
         <button
-          className="text-white bg-red-500 border-2 border-red-400 px-2 py-1 text-sm rounded hover:bg-red-400"
+          className="flex items-center text-red-500 bg-red-400 bg-opacity-10 ring-red-500 ring-opacity-30 p-4 text-sm rounded hover:text-white hover:bg-opacity-100 focus:outline-none focus:bg-opacity-100 focus:text-white w-2/3 shadow mx-auto transition-colors"
           type="button"
           onClick={() => navigate('/')}
         >
-          View URGENT information requested
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01" />
+          </svg>
+          <span className="flex-grow ml-3 pl-3 border-l border-red-500 border-opacity-50 text-left">
+            View URGENT information requested
+          </span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="ml-2"
+          >
+            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+          </svg>
         </button>
       )}
       {!displayedRequests.length && <StatusText text="No information has been requested." />}

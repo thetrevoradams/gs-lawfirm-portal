@@ -78,51 +78,6 @@ function formatDate(date) {
   return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(date))
 }
 
-async function updateRecordWithAttachments(dataToken, record) {
-  if (record.RecordID_fk) {
-    let attachmentsRaw
-    try {
-      attachmentsRaw = await fetch(`${process.env.REACT_DB_FILES_URL}/_find`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${dataToken}`,
-        },
-        body: JSON.stringify({ query: [{ RecordID_fk: record.RecordID_fk }] }),
-      })
-
-      if (attachmentsRaw) {
-        const json = await attachmentsRaw.json()
-        const attachments = []
-        const hasAttachments = json.response && json.response.data
-        if (hasAttachments) {
-          json.response.data.forEach((file) => {
-            if (file.fieldData.AttachmentContainer) {
-              attachments.push({
-                ...file.fieldData,
-                url: file.fieldData.AttachmentContainer || '',
-                // attachmentRecordId: file.recordId,
-              })
-            }
-          })
-        }
-        return { ...record, attachments }
-      }
-
-      // --- FORMAT DATES ---
-      const { LegalActionStatusDate, UpdateRequestDate, UpdateResponseDate } = record
-      const legalActionStatusDateFormatted = LegalActionStatusDate ? formatDate(LegalActionStatusDate) : ''
-      const updateRequestDateFormatted = UpdateRequestDate ? formatDate(UpdateRequestDate) : ''
-      const updateResponseDateFormatted = UpdateResponseDate ? formatDate(UpdateResponseDate) : ''
-      return { ...record, legalActionStatusDateFormatted, updateRequestDateFormatted, updateResponseDateFormatted }
-    } catch (error) {
-      console.log('error', { error, attachmentsRaw, fk: record.RecordID_fk })
-      return record
-    }
-  }
-  return record
-}
-
 exports.handler = async (event) => {
   const { uid } = JSON.parse(event.body)
 
@@ -143,18 +98,21 @@ exports.handler = async (event) => {
         if (firmData.recordId) {
           // --- GET LAW FIRM RECORDS ---
           const recordData = await fetchLawFirmData(dataToken, userLawFirmData.LawFirmMasterId)
-          let lawFirmRecords = recordData
-          // Lousy Netlify functions don't support optional chaining or a babelrc
-          // that includes that plugin
-          if (recordData && recordData.response && recordData.response.data) {
-            // --- GET FILES ATTACHED TO CASES ---
-            lawFirmRecords = await Promise.all(
-              recordData.response.data.map((item) =>
-                updateRecordWithAttachments(dataToken, { ...item.fieldData, recordId: item.recordId })
-              )
-            )
-          }
-          // console.log(lawFirmRecords[0])
+
+          const lawFirmRecords = recordData.response.data.map((item) => ({
+            ...item.fieldData,
+            recordId: item.recordId,
+            attachments: item.portalData.Attachments || [],
+            LegalActionStatusDateFormatted: item.fieldData.LegalActionStatusDate
+              ? formatDate(item.fieldData.LegalActionStatusDate)
+              : '',
+            UpdateRequestDateFormatted: item.fieldData.UpdateRequestDate
+              ? formatDate(item.fieldData.UpdateRequestDate)
+              : '',
+            UpdateResponseDateFormatted: item.fieldData.UpdateResponseDate
+              ? formatDate(item.fieldData.UpdateResponseDate)
+              : '',
+          }))
 
           return {
             statusCode: 200,
@@ -172,7 +130,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({ err: resp.error }),
     }
   } catch (error) {
-    console.log('you got an error', error) // output to netlify function log
+    console.log('error', error) // output to netlify function log
     return {
       statusCode: 500,
       body: JSON.stringify({ err: error }),

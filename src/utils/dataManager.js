@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
-const submitResp = async ({ recordId, response, urgentId, itemHistory, date, lawFirmData, record }) => {
+const submitResp = async ({ recordId, response, urgent, itemHistory, date, lawFirmData, record }) => {
   try {
     const submissionRaw = await fetch('/.netlify/functions/responseManager', {
       method: 'POST',
       body: JSON.stringify({
         recordId,
         response,
-        urgentId,
+        urgent,
         type: 'actionResp',
         itemHistory,
         date,

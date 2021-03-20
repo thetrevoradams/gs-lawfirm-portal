@@ -37,7 +37,6 @@ module.exports = {
       gsIconGray: '#7C7F93',
       gsGray: '#181B1F',
       gsGrayText: '#525461',
-      gsOrangeGray: '#998A77',
       gsLightOrange: '#F7DCB9',
       gsOrange: '#EBA145',
       gsDarkOrange: '#E68917',

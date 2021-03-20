@@ -5,7 +5,7 @@ import Tooltip from './tooltip'
 import LoadingIconSwap from './loadingIconSwap'
 
 const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
-  const { dispatch, urgentId, lawFirmData } = useContext(RecordsContext)
+  const { dispatch, lawFirmData } = useContext(RecordsContext)
   const [resp, setResp] = useState('')
   const [loading, setLoading] = useState(false)
   const [containerHeight, setContainerHeight] = useState(1)
@@ -28,14 +28,14 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
         reqMsg: record.UpdateRequest,
         respDate: date,
         respMsg: resp,
-        urgent: Boolean(urgentId),
+        urgent: Boolean(record.UrgentRequest),
         submittedBy: uid,
       },
     ]
     if (pastActions) itemHistory = [...itemHistory, ...pastActions]
     const data = await submitResp({
       recordId: record.recordId,
-      urgentId,
+      urgent: record.UrgentRequest,
       response: resp,
       date,
       itemHistory,
@@ -44,8 +44,6 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
     })
     setLoading(false)
     if (data.success) {
-      // Clear urgent param
-      window.history.replaceState({}, '', window.location.origin)
       setSuccessMsg('Successfully saved your response.')
       dispatch({ type: 'clearActionItem', recordId: record.recordId, itemHistory })
     } else {
@@ -59,22 +57,26 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
   }, [containerRef])
 
   return (
-    <div className="flex flex-row rounded bg-white mx-8 mb-4 max-w-screen-lg lg:w-full overflow-hidden">
+    <div
+      className={`flex flex-row rounded bg-white mx-8 mb-4 max-w-screen-lg lg:w-full overflow-hidden ${
+        record.UrgentRequest ? 'border-l-4 border-red-400' : ''
+      }`}
+    >
       <div className="flex flex-col text-sm pl-6 py-2 actionItemDeets relative" ref={containerRef}>
-        <div className="font-normal text-gsOrangeGray">Case</div>
+        <div className="font-normal text-gsGrayText opacity-80">Case</div>
         <span>
           {record.CaseName.split('\r').map((name, index) => (
             // eslint-disable-next-line react/no-array-index-key
-            <p key={`${record.recordId}_${index}`} className="text-gsDarkOrange opacity-80 font-semibold">
+            <p key={`${record.recordId}_${index}`} className="text-gsDarkOrange opacity-90 font-semibold">
               {name}{' '}
             </p>
           ))}
         </span>
-        <div className="font-normal text-gsOrangeGray mt-2">File #</div>
-        <span className="text-gsDarkOrange opacity-80 font-semibold">{record.CounselFileNumber}</span>
-        <div className="font-normal text-gsOrangeGray mt-2">State</div>
-        <span className="text-gsDarkOrange opacity-80 font-semibold">
-          {record['JudgmentMaster::JudgmentRecordingState']}
+        <div className="font-normal text-gsGrayText opacity-80 mt-2">File #</div>
+        <span className="text-gsDarkOrange opacity-90 font-semibold">{record.CounselFileNumber}</span>
+        <div className="font-normal text-gsGrayText opacity-80 mt-2">State</div>
+        <span className="text-gsDarkOrange opacity-90 font-semibold">
+          {record['GS JudgmentMaster::JudgmentRecordingState']}
         </span>
         <div
           className="actionItemsDeetsTriangle"
@@ -86,8 +88,8 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
       </div>
       <div className="flex flex-col lg:flex-row flex-grow">
         <div className="flex flex-col mx-4 p-2 flex-grow">
-          <div className={`font-bold ${urgentId === record.recordId ? 'text-red-500' : 'text-gsOrange'}`}>
-            Information Requested {urgentId === record.recordId ? '(URGENT)' : ''}
+          <div className={`font-bold ${record.UrgentRequest ? 'text-red-500 opacity-90' : 'text-gsOrange'}`}>
+            Information Requested{record.UrgentRequest ? ' (URGENT)' : ''}
           </div>
           <div className="flex items-center my-2">
             <svg width="25" height="25" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
@@ -102,7 +104,7 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
               />
             </svg>
             {record.UpdateRequestDate && (
-              <small className="font-semibold text-gsGrayText">{record.updateRequestDateFormatted}</small>
+              <small className="font-semibold text-gsGrayText">{record.UpdateRequestDateFormatted}</small>
             )}
           </div>
           <div className="text-sm text-gsGrayText">

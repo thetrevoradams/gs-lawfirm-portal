@@ -1,10 +1,6 @@
 import React, { createContext, useEffect, useReducer } from 'react'
 import { useRecords } from '../utils'
 
-function useQuery() {
-  return new URLSearchParams(window.location?.search)
-}
-
 const reducer = (state, action) => {
   switch (action.type) {
     case 'init': {
@@ -74,7 +70,6 @@ const reducer = (state, action) => {
         ...state,
         actionItems,
         records,
-        urgentId: '',
         searchTerm: '',
       }
     }
@@ -86,19 +81,17 @@ const reducer = (state, action) => {
 const RecordsContext = createContext()
 
 const RecordsProvider = ({ user, children }) => {
-  const query = useQuery()
   const { records: newRecords, lawFirmData: newLawFirm, error } = useRecords(user)
 
   const [state, dispatch] = useReducer(reducer, {
     records: 'loading',
     actionItems: 'loading',
     lawFirmData: '',
-    searchTerm: query.get('u') || '',
-    urgentId: query.get('u'),
+    searchTerm: '',
     isNewUser: 'loading',
   })
 
-  const { records, actionItems, lawFirmData, searchTerm, urgentId, isNewUser } = state
+  const { records, actionItems, lawFirmData, searchTerm, isNewUser } = state
 
   useEffect(() => {
     if (typeof newRecords !== 'string') {
@@ -114,7 +107,6 @@ const RecordsProvider = ({ user, children }) => {
         actionItems,
         lawFirmData,
         searchTerm,
-        urgentId,
         isNewUser,
         error,
       }}

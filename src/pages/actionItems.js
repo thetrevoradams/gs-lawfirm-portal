@@ -41,15 +41,17 @@ const ActionItems = ({ uid }) => {
                   )}
                 </div>
                 {displayed.length === 0 && <StatusText text="No records match your search." />}
-                {displayed?.map((record) => (
-                  <ActionItem
-                    record={record}
-                    key={record.recordId}
-                    uid={uid}
-                    setErrorMsg={setErrorMsg}
-                    setSuccessMsg={setSuccessMsg}
-                  />
-                ))}
+                {displayed
+                  ?.sort((record) => (record.UrgentRequest ? -1 : 1))
+                  ?.map((record) => (
+                    <ActionItem
+                      record={record}
+                      key={record.recordId}
+                      uid={uid}
+                      setErrorMsg={setErrorMsg}
+                      setSuccessMsg={setSuccessMsg}
+                    />
+                  ))}
               </div>
             )}
           </>

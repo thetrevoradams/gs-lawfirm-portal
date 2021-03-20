@@ -68,8 +68,8 @@ function sendEmailNotification({ lawFirmData: { FirstName, LastName, FirmName },
   })
 }
 
-async function submitResp({ dataToken, recordId, response, urgentId, itemHistory, date, lawFirmData, record }) {
-  if (urgentId) sendEmailNotification({ lawFirmData, record, response })
+async function submitResp({ dataToken, recordId, response, urgent, itemHistory, date, lawFirmData, record }) {
+  if (urgent) sendEmailNotification({ lawFirmData, record, response })
 
   const dataRaw = await fetch(`${process.env.REACT_DB_EDIT_URL}/${recordId}`, {
     method: 'PATCH',
@@ -82,6 +82,7 @@ async function submitResp({ dataToken, recordId, response, urgentId, itemHistory
         requestHistory: JSON.stringify(itemHistory),
         UpdateResponse: response,
         UpdateResponseDate: date,
+        UrgentRequest: '',
       },
     }),
   })
@@ -109,7 +110,7 @@ async function addLegalAction({ dataToken, recordId, response, date, oldActions,
 }
 
 exports.handler = async (entry) => {
-  const { recordId, response, type, date, oldActions, itemHistory, urgentId, lawFirmData, record } = JSON.parse(
+  const { recordId, response, type, date, oldActions, itemHistory, urgent, lawFirmData, record } = JSON.parse(
     entry.body
   )
   try {
@@ -129,7 +130,7 @@ exports.handler = async (entry) => {
             recordId,
             response,
             itemHistory,
-            urgentId,
+            urgent,
             date,
             lawFirmData,
             record,

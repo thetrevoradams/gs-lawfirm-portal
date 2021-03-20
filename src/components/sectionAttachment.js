@@ -7,18 +7,18 @@ const SectionAttachments = ({ record }) => {
   return (
     <div>
       <h3 className="text-gsBlue font-semibold mb-6">Attached Documents</h3>
-      {!attachments.length || (attachments.length === 1 && !attachments[0].url) ? (
+      {!attachments.length || (attachments.length === 1 && !attachments[0]['Attachments::AttachmentContainer']) ? (
         <StatusText text="No documents have been attached to this record." />
       ) : (
         <div className="flex flex-col items-center">
           {attachments.map((file) => {
-            if (!file.url) return null
+            if (!file['Attachments::AttachmentContainer']) return null
             return (
               <a
-                href={file.url}
+                href={file['Attachments::AttachmentContainer']}
                 target="_blank"
                 rel="noreferrer"
-                key={file.ID}
+                key={file.recordId}
                 className="flex items-center text-gsBlue hover:bg-gsBlue hover:text-white focus:outline-none focus:bg-gsBlue focus:text-white rounded p-2 shadow bg-gsBlue bg-opacity-10 p-4 my-2 w-2/3 transition-colors"
               >
                 <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -38,7 +38,7 @@ const SectionAttachments = ({ record }) => {
                   />
                 </svg>
                 <span className="flex-grow ml-3 pl-3 border-l border-gsBlue border-opacity-50">
-                  {file.FileDescription}
+                  {file['Attachments::FileDescription'] || 'Unnamed'}
                 </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
