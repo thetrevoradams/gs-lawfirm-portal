@@ -127,7 +127,7 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
           type="button"
           disabled={!resp}
           className={`bg-gsLightGray text-white w-20 justify-self-end h-full disabled:bg-gsLightOrange flex items-center justify-center ${
-            resp && !loading ? 'cursor-pointer bg-gsDarkOrange hover:bg-gsOrange' : 'cursor-not-allowed'
+            resp && !loading ? 'cursor-pointer bg-gsOrange hover:bg-gsDarkOrange' : 'cursor-not-allowed bg-opacity-40'
           }`}
           style={{ minWidth: '5rem' }}
           onClick={handleSubmit}
@@ -136,7 +136,7 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
             <svg width="24" height="26" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M22 2.156l-11 11.86M22 2.156L15 23.72l-4-9.703-9-4.313 20-7.548z"
-                stroke="#fff"
+                stroke={`#${resp && !loading ? 'fff' : '7C7F93'}`}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
