@@ -15,7 +15,14 @@ const reducer = (state, action) => {
       // Split on new line, and remove dup carriage returns
       const newLegalActions = newActions ? JSON.parse(newActions) : []
       const oldLegalActions = oldActions ? oldActions.replace(/[\n\r]{2,}/g, '\r').split('\r') : []
-      const actions = [...newLegalActions, ...oldLegalActions]
+      const actions = [...newLegalActions, ...oldLegalActions].sort((a, b) => {
+        if (a.date && b.date) {
+          const aDate = new Date(a.date)
+          const bDate = new Date(b.date)
+          return bDate - aDate
+        }
+        return a.date < b.date ? -1 : 1
+      })
       return {
         ...state,
         legalActions: actions,
@@ -65,7 +72,14 @@ const reducer = (state, action) => {
       }
     case 'onSuccess': {
       const { dateVal: date, actionVal: response, legalActions } = state
-      const newActions = [{ date, response }, ...legalActions]
+      const newActions = [{ date, response }, ...legalActions].sort((a, b) => {
+        if (a.date && b.date) {
+          const aDate = new Date(a.date)
+          const bDate = new Date(b.date)
+          return bDate - aDate
+        }
+        return a.date < b.date ? -1 : 1
+      })
       return {
         ...state,
         legalActions: newActions,

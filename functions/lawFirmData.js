@@ -103,6 +103,7 @@ exports.handler = async (event) => {
             ...item.fieldData,
             recordId: item.recordId,
             attachments: item.portalData.Attachments || [],
+            notes: item['Notes::Note'] || '',
             LegalActionStatusDateFormatted: item.fieldData.LegalActionStatusDate
               ? formatDate(item.fieldData.LegalActionStatusDate)
               : '',
