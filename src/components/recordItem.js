@@ -2,7 +2,7 @@ import React, { useRef, useReducer } from 'react'
 import IconButton from './iconButton'
 import SectionLegal from './sectionLegal'
 import SectionRequests from './sectionRequests'
-import SectionAttachment from './sectionAttachment'
+// import SectionAttachment from './sectionAttachment'
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -91,7 +91,7 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
             selected={expandedSection === 'message'}
             urgent={Boolean(record.UrgentRequest)}
           />
-          <IconButton icon="file" title="Attached Documents" onClick={onClick} selected={expandedSection === 'file'} />
+          {/* <IconButton icon="file" title="Attached Documents" onClick={onClick} selected={expandedSection === 'file'} /> */}
         </div>
       </div>
       <div ref={expanderRef} className="opacity-0 bg-white max-w-screen-lg lg:w-full mx-8 rounded-b recordExpander">
@@ -99,7 +99,7 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
           <SectionLegal record={record} setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg} uid={uid} />
         )}
         {expandedSection === 'message' && <SectionRequests urgent={record.UrgentRequest} record={record} />}
-        {expandedSection === 'file' && <SectionAttachment record={record} />}
+        {/* {expandedSection === 'file' && <SectionAttachment record={record} />} */}
       </div>
     </>
   )
