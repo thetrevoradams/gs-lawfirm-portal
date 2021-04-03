@@ -1,7 +1,7 @@
 import React from 'react'
 import Tooltip from './tooltip'
 
-const RequestBlock = ({ msg, date, wasUrgent }) => {
+const RequestBlock = ({ msg, date, wasUrgent, recordId }) => {
   return (
     <div className="flex flex-col mt-3 ml-2">
       <div className="flex items-center mb-2">
@@ -28,7 +28,18 @@ const RequestBlock = ({ msg, date, wasUrgent }) => {
           </Tooltip>
         )}
       </div>
-      <p className="text-sm ">{msg.replace(/[\n\r]{2,}/g, '\r').replace('\r', ' ')}</p>
+      <div className="text-sm ">
+        {msg
+          .replace(/[\n\r]{2,}/g, '\r')
+          .split('\r')
+          .filter(Boolean)
+          .map((request, index) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <p key={`${recordId}_req_${index}`} className="mb-2">
+              - {request}{' '}
+            </p>
+          ))}
+      </div>
     </div>
   )
 }

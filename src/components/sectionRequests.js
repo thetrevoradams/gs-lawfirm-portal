@@ -82,14 +82,14 @@ const SectionRequests = ({ record, urgent }) => {
 
       {displayedRequests.map(({ reqDate, reqMsg, respDate, respMsg, urgent: wasUrgent }, index) => (
         <div key={`${record.recordId}_request_${index}`}>
-          <RequestBlock msg={reqMsg} date={reqDate} wasUrgent={wasUrgent} />
+          <RequestBlock recordId={record.recordId} msg={reqMsg} date={reqDate} wasUrgent={wasUrgent} />
           <ResponseBlock msg={respMsg} date={respDate} showIcon />
         </div>
       ))}
       {expanded &&
         requestHistory.slice(3).map(({ reqDate, reqMsg, respDate, respMsg, urgent: wasUrgent }, index) => (
           <div key={`${record.recordId}_request_extra_${index}`}>
-            <RequestBlock msg={reqMsg} date={reqDate} wasUrgent={wasUrgent} />
+            <RequestBlock recordId={record.recordId} msg={reqMsg} date={reqDate} wasUrgent={wasUrgent} />
             {respMsg ? (
               <ResponseBlock msg={respMsg} date={respDate} showIcon />
             ) : (
