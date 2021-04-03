@@ -108,7 +108,15 @@ const ActionItem = ({ record, uid, setErrorMsg, setSuccessMsg }) => {
             )}
           </div>
           <div className="text-sm text-gsGrayText">
-            {record.UpdateRequest.replace(/[\n\r]{2,}/g, '\r').replace('\r', ' ')}
+            {record.UpdateRequest.replace(/[\n\r]{2,}/g, '\r')
+              .split('\r')
+              .filter(Boolean)
+              .map((request, index) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <p key={`${record.recordId}_req_${index}`} className="mb-2">
+                  - {request}{' '}
+                </p>
+              ))}
           </div>
         </div>
         <div className="p-2 mx-4">
