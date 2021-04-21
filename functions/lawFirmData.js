@@ -90,14 +90,17 @@ exports.handler = async (event) => {
       const dataToken = tokenJson.response.token
 
       if (dataToken) {
+        console.log(`exports.handler= -> have dataToken`)
         // --- GET USER'S LAW FIRM DETAILS ---
         const firmResp = await fetchUserLawFirm(dataToken, uid)
+        console.log(`exports.handler= -> firmResp`, firmResp)
         const firmData = firmResp.response ? firmResp.response.data[0] : { fieldData: {} }
         const userLawFirmData = { ...firmData.fieldData, recordId: firmData.recordId }
 
         if (firmData.recordId) {
           // --- GET LAW FIRM RECORDS ---
           const recordData = await fetchLawFirmData(dataToken, userLawFirmData.LawFirmMasterId)
+          console.log(`exports.handler= -> recordData`, recordData)
 
           const lawFirmRecords = recordData.response.data.map((item) => ({
             ...item.fieldData,
