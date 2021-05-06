@@ -41,7 +41,7 @@ async function fetchToken(clarisIdToken) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Fmid ${clarisIdToken}`,
+      Authorization: `FMID ${clarisIdToken}`,
     },
     body: JSON.stringify({ fmDataSource: [{ database: 'GS Reports' }] }),
   })
@@ -75,6 +75,18 @@ async function fetchLawFirmData(dataToken, LawFirmMasterID) {
   return json
 }
 
+async function logout(dataToken) {
+  const dataRaw = await fetch(`${process.env.REACT_TOKEN_URL}/${dataToken}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  console.log(`logout -> dataRaw`, dataRaw)
+  const json = await dataRaw.json()
+  return json
+}
+
 function formatDate(date) {
   return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(date))
 }
@@ -99,6 +111,8 @@ exports.handler = async (event) => {
         if (firmData.recordId) {
           // --- GET LAW FIRM RECORDS ---
           const recordData = await fetchLawFirmData(dataToken, userLawFirmData.LawFirmMasterId)
+          // --- LOGOUT OF DB ---
+          await logout(dataToken)
 
           const lawFirmRecords = recordData.response.data.map((item) => ({
             ...item.fieldData,

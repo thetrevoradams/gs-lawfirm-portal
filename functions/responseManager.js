@@ -46,7 +46,7 @@ async function fetchToken(clarisIdToken) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Fmid ${clarisIdToken}`,
+      Authorization: `FMID ${clarisIdToken}`,
     },
     body: JSON.stringify({ fmDataSource: [{ database: 'GS Reports' }] }),
   })
