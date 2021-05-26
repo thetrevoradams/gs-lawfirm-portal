@@ -45,7 +45,7 @@ async function fetchToken(clarisIdToken) {
     },
     body: JSON.stringify({ fmDataSource: [{ database: 'GS Reports' }] }),
   })
-  console.log('tokenRaw resp', { status: tokenRaw.status, statusText: tokenRaw.statusText })
+
   const tokenJson = await tokenRaw.json()
   return tokenJson
 }
