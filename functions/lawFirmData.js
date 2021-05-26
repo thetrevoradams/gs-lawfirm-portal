@@ -99,6 +99,7 @@ exports.handler = async (event) => {
 
     if (!resp.error) {
       // --- DATA TOKEN ---
+      console.log(`exports.handler= -> resp.clarisIdToken`, resp.clarisIdToken)
       const tokenJson = await fetchToken(resp.clarisIdToken)
       const dataToken = tokenJson.response.token
 
@@ -141,6 +142,7 @@ exports.handler = async (event) => {
         }
       }
     }
+    console.log('error resp', resp) // output to netlify function log
     return {
       statusCode: 500,
       body: JSON.stringify({ err: resp.error }),
