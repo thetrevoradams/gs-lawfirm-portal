@@ -113,14 +113,14 @@ async function addLegalAction({ dataToken, recordId, response, date, oldActions,
   return json
 }
 
-async function latestRecord(dataToken, recordId) {
+async function latestRecord(dataToken, masterId) {
   const dataRaw = await fetch(`${process.env.REACT_DB_URL}/_find`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${dataToken}`,
     },
-    body: JSON.stringify({ query: [{ recordId }] }),
+    body: JSON.stringify({ query: [{ MasterID_fk: masterId }] }),
   })
   const json = await dataRaw.json()
   return json
@@ -138,7 +138,9 @@ exports.handler = async (entry) => {
       const tokenJson = await fetchToken(resp.clarisIdToken)
       const dataToken = tokenJson.response.token
 
-      const recordRefresh = await latestRecord(dataToken, recordId)
+      const recordResp = await latestRecord(dataToken, record.MasterID_fk)
+      const recordData = recordResp.response ? recordResp.response.data[0] : { fieldData: {} }
+      const freshRecord = { ...recordData.fieldData, recordId: recordData.recordId }
 
       if (dataToken) {
         let submissionResp = ''
@@ -152,7 +154,7 @@ exports.handler = async (entry) => {
             urgent,
             date,
             lawFirmData,
-            record: recordRefresh || record,
+            record: freshRecord,
           })
         } else if (type === 'legalAction') {
           submissionResp = await addLegalAction({
