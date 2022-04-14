@@ -60,7 +60,19 @@ function sendEmailNotification({ lawFirmData: { FirstName, LastName, FirmName },
     to: 'rcontreras@guarantysolutions.com, jevans@guarantysolutions.com, amullins@guarantysolutions.com',
     subject: 'Urgent Request Response',
     text: 'This is an html only email. Please enable html in your email client to view it.',
-    html: `<html lang="en"> <head> <meta charset="UTF-8" /> <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <title>Document</title> <style> body { background-color: #f1f5fb; display: flex; justify-content: center; width: 100%; height: 100%; } .container { margin-top: 30px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); color: #3b3b3f; background-color: white; height: max-content; overflow: hidden; } .content { padding: 14px; } .banner { padding: 14px 14px 0 14px; margin: 0; color: #E68917; text-transform: uppercase; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; } .fileContainer { padding: 8px 24px; border-radius: 8px; border: 1px solid#F7DCB9; width: max-content; } .fileItem span { margin: 0 0 6px 8px; } .resp { padding-bottom: 14px;} </style> </head> <body> <div class="container"><h3 class="banner">Urgent response submitted by ${FirstName} ${LastName} — ${FirmName}</h3> <div class="content"> <p>This response relates to the following file</p> <div class="fileContainer"> <p class="fileItem"><b>ClientID</b> <span>${record.ClientID}</span></p> <p class="fileItem"><b>Collection Entity</b> <span>${record['MasterRecord::CollectionEntity_calc']}</span></p> <p class="fileItem"><b>MasterID_fk</b> <span>${record.MasterID_fk}</span></p> <p class="fileItem"><b>CaseName</b> <span>${record.CaseName}</span></p> <p class="fileItem"><b>CounselFileNumber</b> <span>${record.CounselFileNumber}</span></p></div> <p class="fileItem resp"><b>Response</b> <span>${response}</span></p></div></div> </body> </html>`,
+    html: `<html lang="en"> <head> <meta charset="UTF-8" /> <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <title>Document</title> <style> body { background-color: #f1f5fb; display: flex; justify-content: center; width: 100%; height: 100%; } .container { margin-top: 30px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); color: #3b3b3f; background-color: white; height: max-content; overflow: hidden; } .content { padding: 14px; } .banner { padding: 14px 14px 0 14px; margin: 0; color: #E68917; text-transform: uppercase; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; } .fileContainer { padding: 8px 24px; border-radius: 8px; border: 1px solid#F7DCB9; width: max-content; } .fileItem span { margin: 0 0 6px 8px; } .resp { padding-bottom: 14px;} </style> </head> <body> <div class="container"><h3 class="banner">Urgent response submitted by ${FirstName} ${LastName} — ${FirmName}</h3> <div class="content"> <p>This response relates to the following file</p> <div class="fileContainer"> <p class="fileItem"><b>Collector</b> <span>${record[
+      'MasterRecord::Collector'
+    ] || 'Not Assigned'}</span></p> <p class="fileItem"><b>ClientID</b> <span>${
+      record.ClientID
+    }</span></p> <p class="fileItem"><b>Collection Entity</b> <span>${
+      record['MasterRecord::CollectionEntity_calc']
+    }</span></p> <p class="fileItem"><b>MasterID_fk</b> <span>${
+      record.MasterID_fk
+    }</span></p> <p class="fileItem"><b>CaseName</b> <span>${
+      record.CaseName
+    }</span></p> <p class="fileItem"><b>CounselFileNumber</b> <span>${
+      record.CounselFileNumber
+    }</span></p></div> <p class="fileItem resp"><b>Response</b> <span>${response}</span></p></div></div> </body> </html>`,
   }
 
   mailgun.messages().send(data, (error) => {
