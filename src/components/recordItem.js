@@ -27,7 +27,12 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
   const containerRef = useRef()
   const { expanded, expandedSection } = state
 
-  const onClick = (icon) => {
+  const onClick = (icon, href) => {
+    if (icon === 'file' && href) {
+      window.open(href, '_blank')
+      return
+    }
+
     const expander = expanderRef?.current
     const container = containerRef?.current
     const section = expanded ? '' : icon
@@ -78,6 +83,15 @@ const RecordItem = ({ record, setSuccessMsg, setErrorMsg, uid }) => {
           <div>{record['GS JudgmentMaster::JudgmentRecordingState']}</div>
         </div>
         <div className="space-x-5 flex items-center">
+          {record['Attachments::AttorneyFolderURL'] && (
+            <IconButton
+              icon="file"
+              onClick={onClick}
+              href={record['Attachments::AttorneyFolderURL']}
+              title="Attached Documents"
+              selected={expandedSection === 'file'}
+            />
+          )}
           <IconButton
             icon="briefcase"
             onClick={onClick}
