@@ -49,10 +49,10 @@ const File = () => (
   </svg>
 )
 
-const IconButton = ({ icon = 'message', onClick, selected, urgent, title }) => {
+const IconButton = ({ icon = 'message', onClick, selected, urgent, title, href = '' }) => {
   const handleClick = (e) => {
     e.target.blur()
-    onClick(icon)
+    onClick(icon, href)
   }
   // const handleKeyPress = (e) => {
   //   if (e.key === 'Enter') {
