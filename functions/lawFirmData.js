@@ -1,38 +1,38 @@
-const AmazonCognitoIdentity = require('amazon-cognito-identity-js')
-const fetch = require('isomorphic-fetch')
-require('dotenv').config()
+const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+const fetch = require('isomorphic-fetch');
+require('dotenv').config();
 
 function asyncAuthenticateUser(cognitoUser, cognitoAuthenticationDetails) {
   return new Promise((resolve, reject) => {
     cognitoUser.authenticateUser(cognitoAuthenticationDetails, {
       onSuccess: resolve,
       onFailure: reject,
-    })
-  })
+    });
+  });
 }
 
 async function fetchClarisId() {
   const auth = new AmazonCognitoIdentity.AuthenticationDetails({
     Username: process.env.REACT_CLARIS_USERNAME,
     Password: process.env.REACT_CLARIS_PASSWORD,
-  })
+  });
   const userPool = new AmazonCognitoIdentity.CognitoUserPool({
     UserPoolId: process.env.REACT_USER_POOL_ID,
     ClientId: process.env.REACT_USER_CLIENT_ID,
-  })
+  });
   const cognitoUser = new AmazonCognitoIdentity.CognitoUser({
     Username: process.env.REACT_CLARIS_USERNAME,
     Pool: userPool,
-  })
+  });
 
   try {
-    const result = await asyncAuthenticateUser(cognitoUser, auth)
-    const accessToken = result.getAccessToken().getJwtToken()
-    const clarisIdToken = result.idToken.jwtToken
-    const refreshToken = result.refreshToken.token
-    return { accessToken, clarisIdToken, refreshToken }
+    const result = await asyncAuthenticateUser(cognitoUser, auth);
+    const accessToken = result.getAccessToken().getJwtToken();
+    const clarisIdToken = result.idToken.jwtToken;
+    const refreshToken = result.refreshToken.token;
+    return { accessToken, clarisIdToken, refreshToken };
   } catch (error) {
-    return { error }
+    return { error };
   }
 }
 
@@ -44,9 +44,9 @@ async function fetchToken(clarisIdToken) {
       Authorization: `FMID ${clarisIdToken}`,
     },
     body: JSON.stringify({ fmDataSource: [{ database: 'GS Reports' }] }),
-  })
-  const tokenJson = await tokenRaw.json()
-  return tokenJson
+  });
+  const tokenJson = await tokenRaw.json();
+  return tokenJson;
 }
 
 async function fetchUserLawFirm(dataToken, uid) {
@@ -57,9 +57,9 @@ async function fetchUserLawFirm(dataToken, uid) {
       Authorization: `Bearer ${dataToken}`,
     },
     body: JSON.stringify({ query: [{ FirebaseUID: uid }] }),
-  })
-  const json = await dataRaw.json()
-  return json
+  });
+  const json = await dataRaw.json();
+  return json;
 }
 async function fetchLawFirmData(dataToken, LawFirmMasterID) {
   const dataRaw = await fetch(`${process.env.REACT_DB_URL}/_find`, {
@@ -68,10 +68,10 @@ async function fetchLawFirmData(dataToken, LawFirmMasterID) {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${dataToken}`,
     },
-    body: JSON.stringify({ query: [{ LawFirmMasterID }] }),
-  })
-  const json = await dataRaw.json()
-  return json
+    body: JSON.stringify({ query: [{ LawFirmMasterID }], limit: 1000 }),
+  });
+  const json = await dataRaw.json();
+  return json;
 }
 
 async function logout(dataToken) {
@@ -80,39 +80,51 @@ async function logout(dataToken) {
     headers: {
       'Content-Type': 'application/json',
     },
-  })
-  const json = await dataRaw.json()
-  return json
+  });
+  const json = await dataRaw.json();
+  return json;
 }
 
 function formatDate(date) {
-  return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(date))
+  return new Intl.DateTimeFormat('en', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(date));
 }
 
-exports.handler = async (event) => {
-  const { uid } = JSON.parse(event.body)
+exports.handler = async event => {
+  const { uid } = JSON.parse(event.body);
 
   try {
-    const resp = await fetchClarisId()
+    const resp = await fetchClarisId();
 
     if (!resp.error) {
       // --- DATA TOKEN ---
-      const tokenJson = await fetchToken(resp.clarisIdToken)
-      const dataToken = tokenJson.response.token
+      const tokenJson = await fetchToken(resp.clarisIdToken);
+      const dataToken = tokenJson.response.token;
 
       if (dataToken) {
         // --- GET USER'S LAW FIRM DETAILS ---
-        const firmResp = await fetchUserLawFirm(dataToken, uid)
-        const firmData = firmResp.response ? firmResp.response.data[0] : { fieldData: {} }
-        const userLawFirmData = { ...firmData.fieldData, recordId: firmData.recordId }
+        const firmResp = await fetchUserLawFirm(dataToken, uid);
+        const firmData = firmResp.response
+          ? firmResp.response.data[0]
+          : { fieldData: {} };
+        const userLawFirmData = {
+          ...firmData.fieldData,
+          recordId: firmData.recordId,
+        };
 
         if (firmData.recordId) {
           // --- GET LAW FIRM RECORDS ---
-          const recordData = await fetchLawFirmData(dataToken, userLawFirmData.LawFirmMasterId)
+          const recordData = await fetchLawFirmData(
+            dataToken,
+            userLawFirmData.LawFirmMasterId
+          );
           // --- LOGOUT OF DB ---
-          await logout(dataToken)
+          await logout(dataToken);
 
-          const lawFirmRecords = recordData.response.data.map((item) => ({
+          const lawFirmRecords = recordData.response.data.map(item => ({
             ...item.fieldData,
             recordId: item.recordId,
             attachments: item.portalData.Attachments || [],
@@ -126,28 +138,28 @@ exports.handler = async (event) => {
             UpdateResponseDateFormatted: item.fieldData.UpdateResponseDate
               ? formatDate(item.fieldData.UpdateResponseDate)
               : '',
-          }))
+          }));
 
           return {
             statusCode: 200,
             body: JSON.stringify({ lawFirmRecords, userLawFirmData }),
-          }
+          };
         }
         return {
           statusCode: 500,
           body: JSON.stringify({ err: firmResp.msg }),
-        }
+        };
       }
     }
     return {
       statusCode: 500,
       body: JSON.stringify({ err: resp.error }),
-    }
+    };
   } catch (error) {
-    console.log('error', error) // output to netlify function log
+    console.log('error', error); // output to netlify function log
     return {
       statusCode: 500,
       body: JSON.stringify({ err: error }),
-    }
+    };
   }
-}
+};
